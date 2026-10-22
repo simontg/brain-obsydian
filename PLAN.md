@@ -2,7 +2,7 @@
 
 ## Kontekst (zweryfikowany)
 - Repo kodu (PUBLICZNE): simontg/brain-obsydian. Zawiera graph/graf-wiki.html, README.md, CLAUDE.md, ten plik. Przeczytaj CLAUDE.md najpierw.
-- Notatki żyją na Dysku Google (folder Wiki, ID 1gZ7LkfEBOfg0oY3FGf7HRkIGhADK_b2Z): 1 Google Doc = 1 notatka (57 notatek, 5 hubów, HOT/INDEX/LOG jako meta). Format: pierwsza linia = tytuł, potem Type:, Tags:, Summary:, fakty z tagami [stated]/[verified]/[unverified], linia Related: (tytuły rozdzielone średnikiem), [[Dokładny tytuł]]; wiersze huba: "- Tytuł | typ | opis | tagi | data".
+- Notatki żyją na Dysku Google (folder Wiki, ID 1gZ7LkfEBOfg0oY3FGf7HRkIGhADK_b2Z): 1 Google Doc = 1 notatka (67 węzłów wg stanu z 22.10.2026, w tym 5 hubów i HOT/INDEX/LOG jako meta; w chwili pisania planu było 57). Format: pierwsza linia = tytuł, potem Type:, Tags:, Summary:, fakty z tagami [stated]/[verified]/[unverified], linia Related: (tytuły rozdzielone średnikiem), [[Dokładny tytuł]]; wiersze huba: "- Tytuł | typ | opis | tagi | data".
 - Dwa skrypty w Termuxie (telefon, cron): wiki_index.py (:07) buduje lokalny indeks wyszukiwania BM25 w SQLite FTS5 i wysyła INDEX-AUTO.txt; wiki_graph.py (:12) buduje GRAPH-AUTO.json (węzły, krawędzie, lint). Kopia wiki_graph.py na Dysku: ID 16L62fcMCjLgfsz0Yq6MkjbFpX7VET2lF. wiki_index.py jest tylko w Termuxie (poproś właściciela o kopię).
 - Strona grafu jest artefaktem Claude i czyta GRAPH-AUTO.json z Dysku przez konektor. Nie czyta z GitHuba (nie wiadomo, czy mogłaby).
 - Test z 21.10: zadanie w chmurze MA dostęp do Dysku przez konektor (Google Drive: get_file_metadata, download_file_content, read_file_content, create_file). Brak rclone w chmurze; curl do googleapis.com z powłoki = 403. Duże odpowiedzi konektora zapisują się do pliku (przetwarzaj jq/Pythonem, nie wczytuj do kontekstu).
@@ -64,7 +64,18 @@ Uwagi: każdy przebieg Action commituje nowy graph/graph.enc.json na main (losow
 ## Etap 2 (eksport notatek do prywatnego repo)
 Opcja A (rekomendowana, najtaniej w tokenach): właściciel na telefonie uruchamia istniejący rclone: `rclone copy "gdrive:Claude - skille i projekty/Wiki" ~/brain-notes --drive-export-formats txt`, potem git push do prywatnego repo. Ty tylko walidujesz wynik.
 Opcja B: konektor Dysku, notatka po notatce (kosztowne w tokenach; zmierz najpierw 3 notatki).
-Walidacja (skryptem): liczba plików = 57 (+/- zmiany); tytuł w pierwszej linii = nazwa pliku; każda notatka ma Type:; nazwy plików bezpieczne (slug), tytuł zostaje w treści. Bez przepisywania treści i bez normalizacji, tylko eksport 1:1.
+Walidacja (skryptem): liczba plików = liczba węzłów w GRAPH-AUTO.json (22.10.2026: 67); tytuł w pierwszej linii = nazwa pliku; każda notatka ma Type:; nazwy plików bezpieczne (slug), tytuł zostaje w treści. Bez przepisywania treści i bez normalizacji, tylko eksport 1:1.
+
+## Etap 2: WYNIKI (22.10.2026) — STATUS: ZAMKNIĘTY Z UWAGAMI
+Eksport 1:1 z Dysku wypchnięty przez właściciela do prywatnego `Brain-Obsydian-NOTES` (commit 41b731d), po walidacji porządki w commicie 4fd8651. Stan: 67 plików w `wiki/`, wszystkie notatki; w katalogu głównym tylko `wiki/`.
+Zweryfikowane (skryptem sesji walidującej i ponownie przez orkiestratora na klonie): 67 plików; `Type:` z wartością w 67/67; 67 węzłów w grafie z Dysku (22.10.2026) = 67 plików; lint grafu: 0 martwych linków, 0 niejednoznacznych tytułów, 0 osieroconych, 0 bez typu, 0 pustych.
+Usunięte z repo notatek (za zgodą właściciela): `pilot-test.txt` (syntetyczny test zapisu) oraz `wiki/INDEX-AUTO.txt` (dane pochodne z `wiki_index.py`, w etapie 3 będą generowane Actionem).
+Pozycje otwarte (nie blokują etapu 3, chyba że napisano inaczej):
+- O1. 64 z 67 nazw plików ma dwukropek (niedozwolony w nazwach plików Windows). Decyzja właściciela: zostają, bez normalizacji. Do rozstrzygnięcia PRZED etapem 5; nie sprawdzono, jak radzą sobie rclone, Termux i Obsidian. Nie blokuje etapu 3.
+- O2. Wszystkie 67 plików ma BOM i końce linii CRLF (z eksportu Dysku). Etap 3 musi to obsłużyć przy parsowaniu (utf-8-sig, normalizacja CRLF) bez zmieniania plików. BLOKUJE test `wiki_graph.py`.
+- O3. Pierwsza linia `HOT.txt` ma sufiks ze stanem (data i godzina), więc nie równa się nazwie pliku; to jedyny taki plik (kontrola orkiestratora). Traktować jako wyjątek meta; w etapie 3 sprawdzić, jak tytuł HOT trafia do grafu.
+- O4. Różnica 57 (w chwili pisania planu) wobec 67 (stan z 22.10): wyjaśnienie właściciela to przyrost notatek z innego projektu po pierwszym eksporcie. Niezweryfikowane. Nie blokuje.
+- O5. Przyczyna, dla której `INDEX-AUTO.txt` znalazł się w eksporcie: zakładana (kopiowanie całego folderu `Wiki`), niepotwierdzona. Nie blokuje.
 
 ## Etap 3 (skrypty)
 1. tools/wiki_graph.py: reużyj czystej funkcji build() z kopii na Dysku, wczytuj pliki z katalogu zamiast rclone. Test: wygeneruj graf z eksportu i porównaj z GRAPH-AUTO.json z Dysku (te same tytuły, te same krawędzie, ten sam lint; ID węzłów mogą się różnić).
