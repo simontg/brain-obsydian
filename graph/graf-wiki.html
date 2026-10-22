@@ -284,13 +284,48 @@ async function fetchGraph(){
   return g;
 }
 
+/* Poza Claude (np. GitHub Pages): zaszyfrowany graph.enc.json (AES-GCM, PBKDF2) obok strony, hasło wpisuje użytkownik. */
+let pw = null;
+try { pw = sessionStorage.getItem("gbo-pw"); } catch(_){}
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function decrypt(f, pass){
+  const km = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:b64(f.salt), iterations:f.iter, hash:"SHA-256"}, km, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM", iv:b64(f.iv)}, key, b64(f.ct))));
+}
+function askPassword(err){
+  return new Promise(res => {
+    const inp = h("input", {type:"password", autocomplete:"current-password", "aria-label":"Hasło", required:"", style:"min-height:38px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg);width:100%"});
+    const form = h("form", {style:"display:flex;flex-direction:column;gap:10px;width:100%", onsubmit:ev => { ev.preventDefault(); res(inp.value); }}, inp, h("button", {class:"btn primary", type:"submit"}, "Odszyfruj"));
+    showMsg(err ? "err" : "info", "Graf jest zaszyfrowany", err || "Wpisz hasło. Odszyfrowanie odbywa się w przeglądarce.", [form]);
+    inp.focus();
+  });
+}
+async function fetchEncrypted(){
+  if (!(window.crypto && crypto.subtle)) throw {code:"no_crypto", message:"Przeglądarka nie udostępnia WebCrypto (potrzebne https)."};
+  const r = await fetch("graph.enc.json", {cache:"no-store"});
+  if (!r.ok) throw {code:"http_" + r.status, message:"Nie pobrano graph.enc.json."};
+  const f = await r.json();
+  for (let err = ""; ; ){
+    if (pw === null) pw = await askPassword(err);
+    try {
+      const g = await decrypt(f, pw);
+      try { sessionStorage.setItem("gbo-pw", pw); } catch(_){}
+      return g;
+    } catch(_){ pw = null; try { sessionStorage.removeItem("gbo-pw"); } catch(__){} err = "Błędne hasło lub uszkodzony plik. Spróbuj ponownie."; }
+  }
+}
+
 async function load(){
   $("refresh").disabled = true;
-  showMsg("info", "Wczytuję graf z Dysku...", "Przy pierwszym otwarciu pojawi się prośba o zgodę na odczyt.");
+  if (window.claude) showMsg("info", "Wczytuję graf z Dysku...", "Przy pierwszym otwarciu pojawi się prośba o zgodę na odczyt.");
   try {
-    if (!mcp) mcp = await window.claude.use("mcp");
-    if (!mcp){ showMsg("err", "Ta strona działa tylko w aplikacji Claude", "Do odczytu Dysku potrzebny jest dostęp do konektorów, którego tu brakuje. Otwórz stronę w aplikacji Claude na komputerze lub telefonie."); setFresh("Brak dostępu do Dysku", "off"); return; }
-    const g = await fetchGraph();
+    let g;
+    if (window.claude){
+      if (!mcp) mcp = await window.claude.use("mcp");
+      if (!mcp){ showMsg("err", "Ta strona działa tylko w aplikacji Claude", "Do odczytu Dysku potrzebny jest dostęp do konektorów, którego tu brakuje. Otwórz stronę w aplikacji Claude na komputerze lub telefonie."); setFresh("Brak dostępu do Dysku", "off"); return; }
+      g = await fetchGraph();
+    } else g = await fetchEncrypted();
     data = g; build(g); showMsg(); render();
   } catch(e){
     const [t, tx, acts] = explain(e); showMsg("err", t, tx, acts);
