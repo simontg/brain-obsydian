@@ -27,7 +27,12 @@ Kontekst: ten opis powstał w czacie z aplikacji mobilnej Claude (sesja z narzę
 - Zapis tylko do repo dodanych przez `add_repo` w tej sesji. W razie odmowy (polityka organizacji / brak aplikacji GitHub) przekaż właścicielowi dokładny komunikat i nie ponawiaj.
 - `brain-obsydian` jest PUBLICZNE: nic osobistego tam nie commituj. Notatki tylko do prywatnego `Brain-Obsydian-NOTES`.
 
-## Niezweryfikowane (sprawdź w etapie 0 planu)
-- Czy zadanie Claude Code uruchamiane jako osobna sesja w chmurze (zaplanowane lub ręczne) ma te same narzędzia `claude-code-remote` i te same prawa. Test: `list_repos`, `add_repo` na prywatnym repo z `access:"push"`, commit syntetycznego pliku testowego, `ls-remote`, usunięcie pliku.
+## Ustalone w etapach 3d i 5 (22.10.2026)
+- Sesja uruchomiona przez inną sesję (`create_session`) ma te same narzędzia `claude-code-remote`. `add_repo` z `access: "push"` (a czasem nawet `"read"`) bywa odrzucane przez klasyfikator uprawnień sesji; pomaga wyraźna zgoda właściciela napisana w TEJ sesji (najlepiej od razu na starcie). Zgoda wpisana w innej sesji nie działa.
+- Klasyfikator potrafi też zablokować `git fetch`/`ls-remote` tuż po scaleniu PR; wtedy potwierdzeniem jest wynik `merge_pull_request` albo sprawdzenie z innej sesji.
+- Push z Action do innego repo wymaga osobnego tokenu fine-grained (sekret repo); push wykonany takim tokenem uruchamia workflow w repo docelowym.
+
+## Niezweryfikowane
+- Zadanie zaplanowane (scheduled task) uruchamiające nową sesję: te same narzędzia i prawa? Niesprawdzone.
 - Czy `gh` działa przez proxy tak samo jak `git`.
 - Limity wielkości pushu i czas klonowania dużych repo (obecne repo są małe).
