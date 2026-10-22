@@ -3,6 +3,8 @@
 name: generate-graph-index
 # Regenerates graph/GRAPH-AUTO.json and graph/INDEX-AUTO.txt from wiki/ and commits them
 # only when the content changed (generated_at / generated-at alone do not count).
+# Then encrypts the graph (secret GRAPH_PASSWORD) into graph/graph.enc.json of the public repo
+# (secret PUBLIC_REPO_TOKEN: fine-grained, Contents read/write on that repo only), which deploys it to Pages.
 # The scripts live in the PUBLIC repo simontg/brain-obsydian and are pinned to a commit:
 # review a new tools version, then bump TOOLS_REF below.
 on:
@@ -10,6 +12,10 @@ on:
     branches: [main]
     paths: ['wiki/**', '.github/workflows/generate-graph-index.yml']
   workflow_dispatch:
+    inputs:
+      synthetic_password:
+        description: 'TEST ONLY: publish the SYNTHETIC pilot graph encrypted with this throwaway password (shown in the run)'
+        default: ''
 permissions:
   contents: write
 concurrency:
@@ -17,7 +23,7 @@ concurrency:
   cancel-in-progress: false
 env:
   TOOLS_REPO: simontg/brain-obsydian
-  TOOLS_REF: 549449de513ca4d7ef2198757e24920629cc8970
+  TOOLS_REF: ce4b84c7b53c07b22fd6bfd27600d88ca482fe54
 jobs:
   generate:
     runs-on: ubuntu-latest
@@ -55,5 +61,28 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "graph: regenerate GRAPH-AUTO.json and INDEX-AUTO.txt from ${GITHUB_SHA::7}"
+          git pull --rebase origin main
+          git push
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TOOLS_REPO }}
+          path: .site
+          token: ${{ secrets.PUBLIC_REPO_TOKEN }}
+      - name: Encrypt and publish graph
+        env:
+          GRAPH_PASSWORD: ${{ inputs.synthetic_password || secrets.GRAPH_PASSWORD }}
+          SYNTH: ${{ inputs.synthetic_password }}
+        run: |
+          src="$RUNNER_TEMP/GRAPH-AUTO.json"
+          if [ -n "$SYNTH" ]; then src=.tools/pilot/synthetic-graph.json; echo "synthetic test run"; fi
+          pip install -q cryptography
+          # commits only when the decrypted content changed (random salt/IV change the ciphertext every time)
+          python3 .tools/tools/pilot_build.py "$src" .site/graph/graph.enc.json
+          cd .site
+          git add graph/graph.enc.json
+          if git diff --cached --quiet; then echo "encrypted graph unchanged, nothing to push"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "graph: update encrypted graph"
           git pull --rebase origin main
           git push
