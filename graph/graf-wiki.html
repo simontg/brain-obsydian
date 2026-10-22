@@ -130,7 +130,6 @@ details.bad summary{color:var(--bad)}
       <button id="v-rings" type="button" aria-pressed="true"><span class="lg">Pierścienie</span><span class="sh">Pierść.</span></button>
       <button id="v-net" type="button" aria-pressed="false">Sieć</button>
       <button id="v-time" type="button" aria-pressed="false">Czas</button>
-      <button id="v-orbit" type="button" aria-pressed="false">Orbita</button>
       <button id="v-sphere" type="button" aria-pressed="false">Kula</button>
     </div>
     <input id="q" type="search" placeholder="Szukaj notatki" aria-label="Szukaj notatki" autocomplete="off">
@@ -432,21 +431,17 @@ function computeTime(){
 }
 /* ---------- orbita 3D (rzut perspektywiczny na zwykłym canvasie) ---------- */
 let yaw = .6, pitch = .7, spinning = true, orbitLive = false, orbitRaf = 0, lastT = 0, dragMoved = false;
-const ORB_F = 950, ORB_DY = 56, SR = 330;
-const isOrb = () => view === "orbit" || view === "sphere";
-function orbYt(t){ const i = ringTypes.indexOf(t), m = (ringTypes.length - 1) / 2; return (i - m) * ORB_DY; }
+const ORB_F = 950, SR = 330;
+const isOrb = () => view === "sphere";
 function latOf(t){ const k = ringTypes.length, i = Math.max(0, ringTypes.indexOf(t)); return k < 2 ? 0 : (62 - i * 124 / (k - 1)) * Math.PI / 180; }
 function sph3(lat, lon){ return [SR * Math.cos(lat) * Math.cos(lon), -SR * Math.sin(lat), SR * Math.cos(lat) * Math.sin(lon)]; }
 function base3d(n){
   if (n.type === "meta") return [n.rx, 0, n.ry];
-  if (view === "sphere"){
-    if (n.s3 === undefined){
-      const R = ringR[n.type] || 1, rr = (Math.hypot(n.rx, n.ry) - R) / 24;
-      n.s3 = sph3(latOf(n.type) - rr * .085, Math.atan2(n.ry, n.rx));
-    }
-    return n.s3;
+  if (n.s3 === undefined){
+    const R = ringR[n.type] || 1, rr = (Math.hypot(n.rx, n.ry) - R) / 24;
+    n.s3 = sph3(latOf(n.type) - rr * .085, Math.atan2(n.ry, n.rx));
   }
-  return [n.rx, orbYt(n.type), n.ry];
+  return n.s3;
 }
 function projXYZ(X, Y, Z){
   const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
@@ -465,7 +460,7 @@ function orbitTick(now){
 }
 function kickOrbit(){ if (isOrb() && orbitLive && !orbitRaf){ lastT = 0; orbitRaf = requestAnimationFrame(orbitTick); } }
 document.addEventListener("visibilitychange", () => { if (!document.hidden) kickOrbit(); });
-function posOf(v){ return v === "rings" ? (n => [n.rx, n.ry]) : v === "time" ? (n => [n.tx, n.ty]) : (v === "orbit" || v === "sphere") ? (n => { const q = project(n); return [q[0], q[1]]; }) : (n => [n.lx, n.ly]); }
+function posOf(v){ return v === "rings" ? (n => [n.rx, n.ry]) : v === "time" ? (n => [n.tx, n.ty]) : v === "sphere" ? (n => { const q = project(n); return [q[0], q[1]]; }) : (n => [n.lx, n.ly]); }
 
 function build(g){
   const old = new Map(nodes.map(n => [n.id, n]));
@@ -576,12 +571,6 @@ function draw(){
         ctx.stroke();
       }
       ctx.setLineDash([]);
-    } else {
-      for (const t of ringTypes){
-        ctx.beginPath();
-        for (let i = 0; i <= 72; i++){ const a = i / 72 * 6.2832, q = projXYZ(ringR[t] * Math.cos(a), orbYt(t), ringR[t] * Math.sin(a)); if (i) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]); }
-        ctx.stroke();
-      }
     }
     ctx.globalAlpha = 1;
   }
@@ -734,15 +723,15 @@ function setView(v){
   sim.stop(); orbitLive = false; cancelAnimationFrame(orbitRaf); orbitRaf = 0; view = v; syncViewBtns();
   const pos = posOf(v);
   fit(true, pos);
-  tweenTo(pos, 650, v === "net" ? () => { for (const n of nodes){ n.vx = 0; n.vy = 0; } sim.alpha(.1).restart(); } : (v === "orbit" || v === "sphere") ? () => { orbitLive = true; kickOrbit(); requestDraw(); } : undefined);
-  if (v === "orbit" || v === "sphere"){ for (const n of nodes){ const q = project(n); n.ds = q[2]; n.dz = q[3]; } }
+  tweenTo(pos, 650, v === "net" ? () => { for (const n of nodes){ n.vx = 0; n.vy = 0; } sim.alpha(.1).restart(); } : v === "sphere" ? () => { orbitLive = true; kickOrbit(); requestDraw(); } : undefined);
+  if (v === "sphere"){ for (const n of nodes){ const q = project(n); n.ds = q[2]; n.dz = q[3]; } }
   updateHint();
 }
-function syncViewBtns(){ for (const v of ["rings", "net", "time", "orbit", "sphere"]) $("v-" + v).setAttribute("aria-pressed", String(view === v)); $("spin").hidden = !isOrb(); updateHint(); }
+function syncViewBtns(){ for (const v of ["rings", "net", "time", "sphere"]) $("v-" + v).setAttribute("aria-pressed", String(view === v)); $("spin").hidden = !isOrb(); updateHint(); }
 function updateHint(){
   $("hint").hidden = !nodes.length || !!sel;
   const lines = W >= 700 ? " · linia: ciągła = z huba, kreskowana = Related, kropkowana = [[link]]; dwa kolory = łączy obszary" : "";
-  $("hint").textContent = (view === "sphere" ? "Przeciągnij = obrót · kolumny = obszary (kolor), pasy od góry: huby → źródła · wybierz obszar, a niepowiązane szarzeją" : isOrb() ? "Przeciągnij = obrót · szczypanie/kółko = zoom · warstwy od góry: huby, projekty, decyzje, how-to, tematy, źródła" : view === "time" ? "Oś = dni z zapisem (bez pustych przerw) · pasy = obszary · kolor, kształt i rozmiar jak w innych widokach" : view === "rings" ? "Kolor = obszar · kształt = rodzaj · rozmiar = linki do notatki · dotknij = karta" : "Kolor = obszar · kształt = rodzaj · dotknij = karta") + lines;
+  $("hint").textContent = (view === "sphere" ? "Przeciągnij = obrót · kolumny = obszary (kolor), pasy od góry: huby → źródła · wybierz obszar, a niepowiązane szarzeją" : view === "time" ? "Oś = dni z zapisem (bez pustych przerw) · pasy = obszary · kolor, kształt i rozmiar jak w innych widokach" : view === "rings" ? "Kolor = obszar · kształt = rodzaj · rozmiar = linki do notatki · dotknij = karta" : "Kolor = obszar · kształt = rodzaj · dotknij = karta") + lines;
 }
 function setArea(id){
   areaSel = areaSel === id ? null : id;
@@ -868,7 +857,6 @@ $("refresh").addEventListener("click", () => load());
 $("v-rings").addEventListener("click", () => setView("rings"));
 $("v-net").addEventListener("click", () => setView("net"));
 $("v-time").addEventListener("click", () => setView("time"));
-$("v-orbit").addEventListener("click", () => setView("orbit"));
 $("v-sphere").addEventListener("click", () => setView("sphere"));
 $("spin").addEventListener("click", () => { spinning = !spinning; $("spin").setAttribute("aria-pressed", String(spinning)); kickOrbit(); });
 {
