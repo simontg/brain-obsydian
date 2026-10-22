@@ -1,11 +1,14 @@
-name: pilot-graph
+# Publishes the page and the encrypted graph to GitHub Pages. graph/graph.enc.json is pushed by the
+# generate-graph-index workflow of the private notes repo; this workflow never builds data itself.
+# (Stage 1.5 synthetic pilot: run tools/pilot_build.py locally; do not commit its output over the real graph.)
+name: pages
 on:
   push:
     branches: [main]
-    paths: [pilot/synthetic-graph.json, tools/pilot_build.py, graph/graf-wiki.html, .github/workflows/pilot-graph.yml]
+    paths: [graph/graph.enc.json, graph/graf-wiki.html, .github/workflows/pilot-graph.yml]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 concurrency:
@@ -16,17 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pip install cryptography
-      - run: python tools/pilot_build.py
-        env:
-          PILOT_PASSWORD: ${{ secrets.PILOT_PASSWORD }}
-      - name: Commit encrypted graph
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add graph/graph.enc.json
-          git commit -m "pilot: update encrypted synthetic graph" || exit 0
-          git push
       - name: Assemble site (the page is an artifact fragment, so add doctype, charset, viewport)
         run: |
           mkdir site
