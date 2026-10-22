@@ -74,7 +74,8 @@ jobs:
           SYNTH: ${{ inputs.synthetic_password }}
         run: |
           src="$RUNNER_TEMP/GRAPH-AUTO.json"
-          if [ -n "$SYNTH" ]; then src=.tools/pilot/synthetic-graph.json; echo "synthetic test run"; fi
+          if [ -n "$SYNTH" ]; then src=.tools/pilot/synthetic-graph.json; echo "synthetic test run"
+          elif [ "${#GRAPH_PASSWORD}" -lt 20 ]; then echo "GRAPH_PASSWORD is missing or shorter than 20 characters: refusing to publish the real graph"; exit 1; fi
           pip install -q cryptography
           # commits only when the decrypted content changed (random salt/IV change the ciphertext every time)
           python3 .tools/tools/pilot_build.py "$src" .site/graph/graph.enc.json
