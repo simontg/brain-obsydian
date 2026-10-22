@@ -132,7 +132,7 @@ Pozycje otwarte:
 - O13. ROZWIĄZANE: zapis do prywatnego repo uzyskany za zgodą właściciela (droga A), workflow wgrany i uruchomiony.
 - O14. Przypięcie do SHA 549449d zamiast `main`: po scaleniu PR #7 zostawić (bezpieczniej) lub przepiąć na SHA ze scalenia. Decyduje właściciel. Nie blokuje.
 - O15. Miejsce wyników: `graph/GRAPH-AUTO.json` (zgodnie z etapem 1) i `graph/INDEX-AUTO.txt` (domyślna decyzja, plan nie wskazuje miejsca). Do uzgodnienia przy etapie 4. Nie blokuje.
-- O16. (pkt 4 etapu 3) Strona-artefakt nadal nie odczyta `GRAPH-AUTO.json` z GitHuba (wynik etapu 1.5); graf dla strony nadal produkuje telefon na Dysk, cron zostaje. Graf z GitHuba jest na razie kopią, nie źródłem dla strony.
+- O16. NIEAKTUALNE (22.10.2026): od etapu 3d graf z GitHuba jest źródłem dla strony na Pages; artefakt czytający z Dysku wycofany w etapie 5.
 - O17. ROZWIĄZANE w etapie 3d (pkt 13): filtr `wiki/**` uruchamia przebieg, daty i pobranie narzędzi działają; niesprawdzone zostają tylko równoległy push w trakcie przebiegu i daty w widoku Czas.
 
 ## Etap 3d (graf z GitHuba na stronę w Pages; zasada ustalona 22.10.2026, status: ZAMKNIĘTY Z UWAGAMI, patrz "Etap 3d: WYNIKI")
@@ -169,8 +169,8 @@ NIEZWERYFIKOWANE / niezrobione: (a) odszyfrowanie nowej wersji (z notatką testo
 Pozycje otwarte:
 - O3d-1. ROZWIĄZANE (22.10.2026): właściciel wygenerował token `brain-obsydian` od nowa (Repository access tylko `brain-obsydian`, Read and Write do kodu) i zapisał go w sekrecie Actions `PUBLIC_REPO_TOKEN`. Poprzednia zapisana wartość nie była ważnym tokenem (HTTP 401; przyczyny niezweryfikowane). Token do telefonu (`Brain-Obsydian-NOTES`, tylko prywatne repo) nie ma związku z workflow i został nietknięty.
 - O3d-2. ROZWIĄZANE (22.10.2026): nowa wersja workflow jest na `main` prywatnego repo (merge PR Brain-Obsydian-NOTES#1, commit scalenia 5c9aa41), pierwsza publikacja prawdziwego grafu wykonana i sprawdzona (pkt 9-11).
-- O3d-3. Gałąź testowa `stage-3d-test` w prywatnym repo jest scalona i zbędna; do usunięcia przyciskiem "Delete branch" na stronie PR #1 (agent jej nie usuwał). Nie blokuje.
-- O3d-5. Szablon workflow w tym repo (PR #12: krok kontroli sekretów, tryb `check_only`, próg 20 znaków hasła) czeka na scalenie przez orkiestratora; wdrożony w prywatnym repo plik jest identyczny z szablonem z gałęzi PR #12. Nie blokuje.
+- O3d-3. ROZWIĄZANE (22.10.2026): właściciel usunął gałąź `stage-3d-test` w repo notatek (orkiestrator sprawdził `git ls-remote --heads`: została tylko `main`). Właściciel usunął też nieużywany sekret `PILOT_PASSWORD` w tym repo (potwierdzenie właściciela; agent nie ma wglądu w sekrety).
+- O3d-5. ROZWIĄZANE (22.10.2026): PR #12 sprawdzony i scalony przez orkiestratora (merge 5331200); wdrożony plik w repo notatek identyczny z szablonem (sprawdzone `cmp`).
 - O3d-4. ROZWIĄZANE (22.10.2026): test koniec-do-końca wykonany na notatce syntetycznej (pkt 13).
 - O6 (z 3a): ZAAKCEPTOWANE wg decyzji E4 etapu 5: płaska data notatek z eksportu zostaje, nowe zmiany mają daty z gita.
 
@@ -238,5 +238,11 @@ Pozycje otwarte:
 - O22: porządki lintu w repo, tylko za osobną zgodą (E4). Nie blokuje.
 - O24: ten PR (PLAN.md, CLAUDE.md, README) czeka na scalenie przez orkiestratora. Nie blokuje.
 
-## Do zweryfikowania przed etapem 5
-Konektor GitHuba w czacie telefonu, sposób zasilania artefaktu danymi, koszt tokenów jednego "wiki save" w nowym układzie, czy FTS5 działa w środowisku chmurowym i na Termuxie.
+## Do zweryfikowania przed etapem 5 — ROZSTRZYGNIĘTE (22.10.2026)
+- Dostęp do GitHuba z czatu na telefonie: działa przez narzędzia sesji `claude-code-remote` (`add_repo`), nie przez konektor GitHub (etap 1.5); zapis „wiki git save” z czatu na telefonie zaliczony w etapie 5 (8bc95a8).
+- Zasilanie artefaktu danymi: niepotrzebne; artefakt wycofany, graf jest na Pages (etapy 3d i 5).
+- FTS5: działa w chmurze (Action uruchamia `wiki_index.py` przy każdym zapisie). Na Termuksie niesprawdzane; po wyłączeniu crona nieistotne.
+- Koszt tokenów jednego „wiki save” w nowym układzie: NIEZMIERZONY.
+
+## Stan po migracji (22.10.2026)
+Migracja zakończona: etapy 0-5 zamknięte (część „z uwagami”). Opis stanu, sposób pracy i lista spraw otwartych: `docs/ORCHESTRATOR-HANDOFF.md`.
