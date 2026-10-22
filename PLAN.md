@@ -135,7 +135,7 @@ Pozycje otwarte:
 - O16. (pkt 4 etapu 3) Strona-artefakt nadal nie odczyta `GRAPH-AUTO.json` z GitHuba (wynik etapu 1.5); graf dla strony nadal produkuje telefon na Dysk, cron zostaje. Graf z GitHuba jest na razie kopią, nie źródłem dla strony.
 - O17. ROZWIĄZANE w etapie 3d (pkt 13): filtr `wiki/**` uruchamia przebieg, daty i pobranie narzędzi działają; niesprawdzone zostają tylko równoległy push w trakcie przebiegu i daty w widoku Czas.
 
-## Etap 3d (graf z GitHuba na stronę w Pages; zasada ustalona 22.10.2026, status: W TOKU, patrz "Etap 3d: WYNIKI")
+## Etap 3d (graf z GitHuba na stronę w Pages; zasada ustalona 22.10.2026, status: ZAMKNIĘTY Z UWAGAMI, patrz "Etap 3d: WYNIKI")
 Decyzja właściciela (22.10.2026): całość przechodzi na GitHub; utrzymywanie grafu na Dysku i crona na telefonie nie ma sensu po migracji. Wyłączenie crona i degradacja Dysku do kopii zapasowej dopiero w etapie 5, po pracy równoległej i spełnieniu jego kryteriów (do tego czasu cron nie jest ruszany).
 Cel: Action w prywatnym `Brain-Obsydian-NOTES`, po wygenerowaniu `graph/GRAPH-AUTO.json`, szyfruje graf i publikuje go w publicznym `brain-obsydian` (Pages), jak w pilotażu 1.5. Strona odszyfrowuje graf hasłem w przeglądarce.
 Decyzje właściciela PRZED startem (agent ich nie podejmuje, wartości sekretów nigdy nie widzi):
@@ -172,6 +172,7 @@ Pozycje otwarte:
 - O3d-3. Gałąź testowa `stage-3d-test` w prywatnym repo jest scalona i zbędna; do usunięcia przyciskiem "Delete branch" na stronie PR #1 (agent jej nie usuwał). Nie blokuje.
 - O3d-5. Szablon workflow w tym repo (PR #12: krok kontroli sekretów, tryb `check_only`, próg 20 znaków hasła) czeka na scalenie przez orkiestratora; wdrożony w prywatnym repo plik jest identyczny z szablonem z gałęzi PR #12. Nie blokuje.
 - O3d-4. ROZWIĄZANE (22.10.2026): test koniec-do-końca wykonany na notatce syntetycznej (pkt 13).
+- O6 (z 3a): ZAAKCEPTOWANE wg decyzji E4 etapu 5: płaska data notatek z eksportu zostaje, nowe zmiany mają daty z gita.
 
 ## Etap 4 (skille)
 - Przygotuj w repo prywatnym .claude/skills/ wariant gitowy wiki-brain (np. wiki-brain-git): te same komendy (wiki save / ask / lint), te same zasady (jeden fakt w jednej notatce, Related z dokładnymi tytułami, HOT jako router z linią Related do wszystkich hubów, tagi [stated]/[verified]/[unverified], nie kasować), ale operacje na plikach i commitach zamiast Dysku. Oryginalnego skilla na Dysku nie ruszaj.
@@ -211,6 +212,31 @@ Pominięte świadomie: automatyczny test poleceń skilla w publicznym repo (pole
 - Dysk zostaje jako kopia zapasowa. Nic nie kasować.
 - Wyłączenie crona w Termuxie (wiki_index :07, wiki_graph :12) dopiero po spełnieniu kryteriów tego etapu i po etapie 3d; wcześniej cron nie jest ruszany.
 - Zaktualizuj CLAUDE.md i README (bez danych osobistych).
+
+## Etap 5: DECYZJE (właściciel z orkiestratorem, 22.10.2026)
+- E1 (O23): szybkie przełączenie zamiast kilku dni pracy równoległej. Jednorazowa kontrola zgodności Dysk = repo oraz porównanie grafu i lintu, potem źródłem prawdy jest `simontg/Brain-Obsydian-NOTES`. Dysk zostaje kopią tylko do odczytu, nic na nim nie kasować. Właściciel od teraz nie zapisuje do wiki na Dysku.
+- E2: wiki używana w zwykłym czacie Claude (telefon) i w sesjach Claude Code; przed przełączeniem test „wiki git save” w obu miejscach. O20: „wiki git ask” w Claude Code zaliczone wcześniej (5 hubów, 59 notatek, 67 plików, commit 573ccb3); czat na telefonie do testu w tym etapie.
+- E3 (O19): skill dyskowy `wiki-brain` WYŁĄCZONY (nie skasowany; robi właściciel), `wiki-brain-git` dostaje opis reagujący na zwykłe „wiki save / ask / lint” i „zapisz do wiki” (oraz nadal „wiki git …”).
+- E4 (O22, O6): porządki lintu po przełączeniu, w repo („wiki git lint”), tylko za osobną zgodą; płaską datę starych notatek akceptujemy.
+- Domyślne orkiestratora: artefakt-graf czytający z Dysku przestaje być głównym widokiem (główny: strona na Pages), artefaktu nie usuwać, opisać jako wycofany. O18 i O21 zamknięte jako nieistotne po przełączeniu. O14 zostaje.
+
+## Etap 5: WYNIKI (22.10.2026) — STATUS: ZAMKNIĘTY Z UWAGAMI
+Zgoda na `add_repo` z `access: push` dla repo notatek oraz na oba zapisy (LOG, SKILL.md) udzielona przez właściciela w czacie sesji etapu (wcześniej klasyfikator uprawnień odrzucał). Skill lazy-senior załadowany.
+1. Zgodność Dysk = repo — ZWERYFIKOWANE: najnowsza zmiana notatki na Dysku 04:46 UTC 22.10, przed eksportem z etapu 2 (commit 08:14 UTC); 67 notatek wg `GRAPH-AUTO.json` z crona (14:18 UTC). W repo diff `wiki/` 4fd8651..573ccb3 pusty. Ponowny eksport niepotrzebny. Założenie: graf z crona obejmuje wszystkie notatki folderu (listy plików Dysku nie sprawdzano, wyszukiwarka konektora ignorowała filtr daty).
+2. Graf i lint Dysk vs repo — ZWERYFIKOWANE (skrypt, po tytułach): tytuły 67 = 67, krawędzie 305 = 305 (0 różnic), lint 0/0/0/0/0 w obu; jedyna różnica `modified` w 67 węzłach (O6, zaakceptowane).
+3. „wiki git save” — ZWERYFIKOWANE w obu miejscach, każdy zapis = 1 linia w `wiki/LOG.txt`, bez innych notatek i bez HOT (zakres zgody właściciela):
+   a) Claude Code: commit 0e2d36c; CHECK pusty, FIX bez zmiany bajtów (BOM+CRLF), LINTDIFF `{}`, ls-remote = HEAD; Action #12 zielony, bot 89cf3a0 (repo notatek) i 1dd4fd8 (publiczne); plik na Pages (`/graph.enc.json`) ma sha256 = plik w repo ok. 50 s po pushu.
+   b) Zwykły czat na telefonie (właściciel): commit 8bc95a8 (CHECK pusty, LINTDIFF `{}`, ls-remote = HEAD wg czatu); sprawdzone przez agenta: zmieniony tylko LOG, BOM+CRLF, bez końcowego znaku nowej linii; bot b554573 i a559dc6; sha256 na Pages = repo. O20 ZAMKNIĘTE (Claude Code i telefon).
+4. Skill — ZWERYFIKOWANE: `wiki-brain-git` 1.1 w repo notatek (9404701; zmiana tylko opisu, wersji i odwołań do Dysku jako źródła prawdy; push bez zmian w `wiki/` nie uruchomił Actiona). Właściciel zainstalował kartą (nowy opis widoczny w sesji) i wyłączył `wiki-brain`. Test zwykłego „wiki ask” w świeżym czacie: użyto repo (HEAD b554573), nie Dysku; 5 hubów, 60 wierszy w hubach = 60 krawędzi `hub` w grafie (59 zwykłych notatek, jedna w dwóch hubach). O19 ZAMKNIĘTE.
+5. Cron w Termuxie — ZWERYFIKOWANE (wynik `crontab -l` od właściciela): usunięte dokładnie 2 linie (`run_wiki_index.sh` :07, `run_wiki_graph.sh` :12), kopia `~/crontab-backup-etap5.txt` (+ automatyczna `~/.cache/crontab/crontab.bak`), pozostałe zadania bez zmian, pliki nietknięte. Pierwsza próba zatrzymana przez zabezpieczenie (wzorzec `.py` nie pasował, cron niezmieniony). Przywrócenie: `crontab ~/crontab-backup-etap5.txt`.
+6. CLAUDE.md i README zaktualizowane (ten PR), bez danych osobistych.
+Dysk: nic nie zmieniano ani nie kasowano. `GRAPH-AUTO.json` i `INDEX-AUTO.txt` na Dysku są od teraz zamrożone (ostatni przebieg crona przed wyłączeniem); artefakt-graf czyta zamrożone dane.
+NIEZWERYFIKOWANE: (a) czy zwykłe „wiki save” zawsze wybiera `wiki-brain-git` (sprawdzone tylko „wiki ask”); (b) wyłączenie `wiki-brain` w ustawieniach widziane tylko przez właściciela; (c) daty w widoku Czas po nowych zapisach.
+Pozycje otwarte:
+- O18, O21, O23: ZAMKNIĘTE (decyzje etapu 5). O6: ZAAKCEPTOWANE (E4).
+- O14: przypięcie narzędzi po SHA zostaje. Nie blokuje.
+- O22: porządki lintu w repo, tylko za osobną zgodą (E4). Nie blokuje.
+- O24: ten PR (PLAN.md, CLAUDE.md, README) czeka na scalenie przez orkiestratora. Nie blokuje.
 
 ## Do zweryfikowania przed etapem 5
 Konektor GitHuba w czacie telefonu, sposób zasilania artefaktu danymi, koszt tokenów jednego "wiki save" w nowym układzie, czy FTS5 działa w środowisku chmurowym i na Termuxie.
