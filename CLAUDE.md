@@ -1,5 +1,8 @@
 # CLAUDE.md — brain-obsydian
 
+## START HERE
+Read `PLAN.md` (migration plan, staged, with stop points). Do not start any stage without the owner's approval; Stage 0 is read-only.
+
 ## What this is
 Personal knowledge-base tooling. Owner: Stanley (writes Polish; code, comments and technical labels in English).
 UI strings in the graph page are Polish.
