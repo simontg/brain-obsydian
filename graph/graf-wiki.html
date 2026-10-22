@@ -219,7 +219,8 @@ function fmt(iso){
   return d.toLocaleString("pl-PL", {day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit"});
 }
 const fmtDay = iso => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("pl-PL", {day:"numeric", month:"short"}); };
-const docUrl = id => "https://docs.google.com/document/d/" + id + "/edit";
+// In Claude the graph comes from Drive (id = Google Doc ID); on Pages from the notes repo (id = file name in wiki/, opens only when signed in to GitHub).
+const docUrl = id => window.claude ? "https://docs.google.com/document/d/" + id + "/edit" : "https://github.com/simontg/Brain-Obsydian-NOTES/blob/main/wiki/" + encodeURIComponent(id + ".txt");
 const short = (s, n) => s.length > n ? s.slice(0, n - 1) + "…" : s;
 
 /* ---------- kształty: rodzaj notatki ---------- */
@@ -808,7 +809,7 @@ function renderPanel(){
     p.append(h("dl", {class:"kv"}, h("dt", {text:"Zmieniona"}), h("dd", {text:fmt(n.modified)}), h("dt", {text:"Rozmiar"}), h("dd", {text:(n.chars||0) + " znaków"}), h("dt", {text:"Linków do niej"}), h("dd", {text:String(n.incoming||0)})));
     const cp = h("button", {class:"btn", type:"button"}, "Kopiuj [[tytuł]]");
     cp.addEventListener("click", () => copyText("[[" + n.title + "]]", cp));
-    p.append(h("div", {class:"acts"}, h("a", {class:"open", href:docUrl(n.id), target:"_blank", rel:"noopener"}, "Otwórz w Dokumentach"), cp,
+    p.append(h("div", {class:"acts"}, h("a", {class:"open", href:docUrl(n.id), target:"_blank", rel:"noopener"}, window.claude ? "Otwórz w Dokumentach" : "Otwórz na GitHubie"), cp,
       h("button", {class:"btn", type:"button", onclick:() => select(n.id, true)}, "Wyśrodkuj")));
     p.append(h("h3", {text:"Prowadzi do (" + out.length + ")"}), out.length ? h("ul", {class:"nl"}, out.map(i => noteBtn(i))) : h("p", {class:"mut", text:"Brak."}));
     p.append(h("h3", {text:"Prowadzą do niej (" + inn.length + ")"}), inn.length ? h("ul", {class:"nl"}, inn.map(i => noteBtn(i))) : h("p", {class:"mut", text:"Brak."}));
@@ -843,7 +844,7 @@ function renderPanel(){
 }
 function renderFresh(){
   if (!data) return;
-  const m = Math.round((Date.now() - Date.parse(data.generated_at)) / 60000), old = m > STALE_MIN;
+  const m = Math.round((Date.now() - Date.parse(data.generated_at)) / 60000), old = !!window.claude && m > STALE_MIN; // on Pages the graph is republished only when notes change
   setFresh("dane z " + fmt(data.generated_at) + " (" + ago(data.generated_at) + ")" + (old ? " · starsze niż " + STALE_MIN / 60 + " godz., uruchom wiki_graph.py w Termuksie" : ""), old ? "stale" : "");
   $("stat").textContent = nodes.length + " notatek · " + links.length + " powiązań";
 }
