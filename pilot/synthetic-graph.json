@@ -1,29 +1,237 @@
 {
  "nodes": [
-  {"id":"hot","title":"HOT","type":"meta","tags":["synthetic"],"summary":"Synthetic router note.","modified":"2026-10-20T10:00:00Z","chars":900,"verified":1,"stated":2,"unverified":0},
-  {"id":"index","title":"INDEX","type":"meta","tags":["synthetic"],"summary":"Synthetic index note.","modified":"2026-10-20T10:00:00Z","chars":700,"verified":0,"stated":1,"unverified":0},
-  {"id":"hub-a","title":"Hub: Synthetic Area A","type":"hub","tags":["synthetic"],"summary":"Synthetic hub A.","modified":"2026-10-20T10:00:00Z","chars":600,"verified":1,"stated":1,"unverified":0},
-  {"id":"hub-b","title":"Hub: Synthetic Area B","type":"hub","tags":["synthetic"],"summary":"Synthetic hub B.","modified":"2026-10-19T10:00:00Z","chars":600,"verified":1,"stated":1,"unverified":0},
-  {"id":"p1","title":"Synthetic Project 1","type":"project","tags":["synthetic"],"summary":"Synthetic project.","modified":"2026-10-18T10:00:00Z","chars":1200,"verified":1,"stated":3,"unverified":1},
-  {"id":"d1","title":"Synthetic Decision 1","type":"decision","tags":["synthetic"],"summary":"Synthetic decision.","modified":"2026-10-17T10:00:00Z","chars":800,"verified":2,"stated":1,"unverified":0},
-  {"id":"h1","title":"Synthetic How-To 1","type":"how-to","tags":["synthetic"],"summary":"Synthetic how-to.","modified":"2026-10-16T10:00:00Z","chars":950,"verified":2,"stated":0,"unverified":0},
-  {"id":"t1","title":"Synthetic Topic 1","type":"topic","tags":["synthetic"],"summary":"Synthetic topic.","modified":"2026-10-15T10:00:00Z","chars":1100,"verified":0,"stated":2,"unverified":2},
-  {"id":"t2","title":"Synthetic Topic 2","type":"topic","tags":["synthetic"],"summary":"Synthetic topic.","modified":"2026-10-14T10:00:00Z","chars":640,"verified":1,"stated":1,"unverified":0},
-  {"id":"s1","title":"Synthetic Source 1","type":"source","tags":["synthetic"],"summary":"Synthetic source.","modified":"2026-10-13T10:00:00Z","chars":420,"verified":0,"stated":1,"unverified":0}
+  {
+   "id": "hot",
+   "title": "HOT",
+   "type": "meta",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic router note.",
+   "modified": "2026-10-20T10:00:00Z",
+   "chars": 900,
+   "verified": 1,
+   "stated": 2,
+   "unverified": 0
+  },
+  {
+   "id": "index",
+   "title": "INDEX",
+   "type": "meta",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic index note.",
+   "modified": "2026-10-20T10:00:00Z",
+   "chars": 700,
+   "verified": 0,
+   "stated": 1,
+   "unverified": 0
+  },
+  {
+   "id": "hub-a",
+   "title": "Hub: Synthetic Area A",
+   "type": "hub",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic hub A.",
+   "modified": "2026-10-20T10:00:00Z",
+   "chars": 600,
+   "verified": 1,
+   "stated": 1,
+   "unverified": 0
+  },
+  {
+   "id": "hub-b",
+   "title": "Hub: Synthetic Area B",
+   "type": "hub",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic hub B.",
+   "modified": "2026-10-19T10:00:00Z",
+   "chars": 600,
+   "verified": 1,
+   "stated": 1,
+   "unverified": 0
+  },
+  {
+   "id": "p1",
+   "title": "Synthetic Project 1",
+   "type": "project",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic project.",
+   "modified": "2026-10-18T10:00:00Z",
+   "chars": 1200,
+   "verified": 1,
+   "stated": 3,
+   "unverified": 1
+  },
+  {
+   "id": "d1",
+   "title": "Synthetic Decision 1",
+   "type": "decision",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic decision.",
+   "modified": "2026-10-17T10:00:00Z",
+   "chars": 800,
+   "verified": 2,
+   "stated": 1,
+   "unverified": 0
+  },
+  {
+   "id": "h1",
+   "title": "Synthetic How-To 1",
+   "type": "how-to",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic how-to.",
+   "modified": "2026-10-16T10:00:00Z",
+   "chars": 950,
+   "verified": 2,
+   "stated": 0,
+   "unverified": 0
+  },
+  {
+   "id": "t1",
+   "title": "Synthetic Topic 1",
+   "type": "topic",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic topic.",
+   "modified": "2026-10-15T10:00:00Z",
+   "chars": 1100,
+   "verified": 0,
+   "stated": 2,
+   "unverified": 2
+  },
+  {
+   "id": "t2",
+   "title": "Synthetic Topic 2",
+   "type": "topic",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic topic.",
+   "modified": "2026-10-14T10:00:00Z",
+   "chars": 640,
+   "verified": 1,
+   "stated": 1,
+   "unverified": 0
+  },
+  {
+   "id": "s1",
+   "title": "Synthetic Source 1",
+   "type": "source",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic source.",
+   "modified": "2026-10-13T10:00:00Z",
+   "chars": 420,
+   "verified": 0,
+   "stated": 1,
+   "unverified": 0
+  },
+  {
+   "id": "t3",
+   "title": "Synthetic Topic 3 (added in pilot update)",
+   "type": "topic",
+   "tags": [
+    "synthetic"
+   ],
+   "summary": "Synthetic topic added to test the update flow.",
+   "modified": "2026-10-22T06:00:00Z",
+   "chars": 500,
+   "verified": 0,
+   "stated": 1,
+   "unverified": 1
+  }
  ],
  "edges": [
-  {"source":"hot","target":"hub-a","kind":"hub"},
-  {"source":"hot","target":"hub-b","kind":"hub"},
-  {"source":"hub-a","target":"p1","kind":"hub"},
-  {"source":"hub-a","target":"d1","kind":"hub"},
-  {"source":"hub-a","target":"h1","kind":"hub"},
-  {"source":"hub-b","target":"t1","kind":"hub"},
-  {"source":"hub-b","target":"t2","kind":"hub"},
-  {"source":"hub-b","target":"s1","kind":"hub"},
-  {"source":"p1","target":"d1","kind":"related"},
-  {"source":"t1","target":"t2","kind":"related"},
-  {"source":"d1","target":"t1","kind":"link"},
-  {"source":"h1","target":"s1","kind":"link"}
+  {
+   "source": "hot",
+   "target": "hub-a",
+   "kind": "hub"
+  },
+  {
+   "source": "hot",
+   "target": "hub-b",
+   "kind": "hub"
+  },
+  {
+   "source": "hub-a",
+   "target": "p1",
+   "kind": "hub"
+  },
+  {
+   "source": "hub-a",
+   "target": "d1",
+   "kind": "hub"
+  },
+  {
+   "source": "hub-a",
+   "target": "h1",
+   "kind": "hub"
+  },
+  {
+   "source": "hub-b",
+   "target": "t1",
+   "kind": "hub"
+  },
+  {
+   "source": "hub-b",
+   "target": "t2",
+   "kind": "hub"
+  },
+  {
+   "source": "hub-b",
+   "target": "s1",
+   "kind": "hub"
+  },
+  {
+   "source": "p1",
+   "target": "d1",
+   "kind": "related"
+  },
+  {
+   "source": "t1",
+   "target": "t2",
+   "kind": "related"
+  },
+  {
+   "source": "d1",
+   "target": "t1",
+   "kind": "link"
+  },
+  {
+   "source": "h1",
+   "target": "s1",
+   "kind": "link"
+  },
+  {
+   "source": "hub-b",
+   "target": "t3",
+   "kind": "hub"
+  },
+  {
+   "source": "t2",
+   "target": "t3",
+   "kind": "related"
+  }
  ],
- "lint": {"dead_links":[],"ambiguous_titles":[],"orphans":[],"missing_type":[],"empty":[]}
+ "lint": {
+  "dead_links": [],
+  "ambiguous_titles": [],
+  "orphans": [],
+  "missing_type": [],
+  "empty": []
+ }
 }
