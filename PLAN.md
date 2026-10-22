@@ -135,6 +135,20 @@ Pozycje otwarte:
 - O16. (pkt 4 etapu 3) Strona-artefakt nadal nie odczyta `GRAPH-AUTO.json` z GitHuba (wynik etapu 1.5); graf dla strony nadal produkuje telefon na Dysk, cron zostaje. Graf z GitHuba jest na razie kopią, nie źródłem dla strony.
 - O17. Do sprawdzenia przy pierwszym prawdziwym pushu notatek (niezweryfikowane a-c powyżej) przez właściciela lub orkiestratora. Nie blokuje etapu 4.
 
+## Etap 3d (graf z GitHuba na stronę w Pages; zasada ustalona 22.10.2026, status: DO ZROBIENIA)
+Decyzja właściciela (22.10.2026): całość przechodzi na GitHub; utrzymywanie grafu na Dysku i crona na telefonie nie ma sensu po migracji. Wyłączenie crona i degradacja Dysku do kopii zapasowej dopiero w etapie 5, po pracy równoległej i spełnieniu jego kryteriów (do tego czasu cron nie jest ruszany).
+Cel: Action w prywatnym `Brain-Obsydian-NOTES`, po wygenerowaniu `graph/GRAPH-AUTO.json`, szyfruje graf i publikuje go w publicznym `brain-obsydian` (Pages), jak w pilotażu 1.5. Strona odszyfrowuje graf hasłem w przeglądarce.
+Decyzje właściciela PRZED startem (agent ich nie podejmuje, wartości sekretów nigdy nie widzi):
+- D1. Hasło szyfrowania: długa losowa fraza. Zaszyfrowany plik jest publiczny, a historia gita zachowuje wszystkie wersje: tytuły i streszczenia (w tym finanse) są chronione wyłącznie siłą hasła, bez limitu prób offline. Parametry szyfrowania w pilotażu (liczba iteracji PBKDF2) niesprawdzone w tym planie: etap ma je odczytać z `tools/pilot_build.py` i zapisać.
+- D2. Token do zapisu w publicznym repo: fine-grained, tylko `brain-obsydian`, tylko Contents: Read and write, zapisany jako sekret repo notatek (osobno sekret z hasłem). Właściciel tworzy oba sekrety sam.
+- D3. Artefakt Claude czytający z Dysku zostaje do etapu 5 jako układ równoległy.
+Zadania i kryteria "Zaliczone gdy":
+1. Workflow (wersjonowana kopia w `tools/notes-repo/`, wdrożona w prywatnym repo): po zmianie `graph/GRAPH-AUTO.json` powstaje zaszyfrowany plik w publicznym repo; commit tylko przy zmianie treści (losowa sól i IV zmieniają szyfrogram, więc porównywać dane przed szyfrowaniem). Zaliczone gdy: plik w publicznym repo nieczytelny bez hasła, sprawdzone bez wypisywania tytułów (np. brak trafień na kilka tytułów z notatek; wynik tylko jako liczba).
+2. Strona na Pages wczytuje prawdziwy graf. Obejmuje O7 (przycisk "Otwórz": id węzła to nazwa pliku, nie ID dokumentu Google; propozycja: link do pliku w prywatnym repo, niesprawdzone, czy artefakt/strona go otworzy) i O6 (jedna wspólna data dla notatek z eksportu). Zaliczone gdy: działa na telefonie i komputerze, błędne hasło daje komunikat.
+3. Test koniec-do-końca: zmiana jednej notatki w prywatnym repo, po kilku minutach nowy graf na stronie. Zaliczone gdy: potwierdza filtr `wiki/**` i pobranie narzędzi po scaleniu PR #7 (O17, O14).
+4. Test na danych SYNTETYCZNYCH przed prawdziwymi; w logach Action tylko liczby; żadnych sekretów w repo, commitach ani raportach.
+Wynik zapisz w PLAN.md jako "Etap 3d: WYNIKI" ze STATUS i pozycjami otwartymi.
+
 ## Etap 4 (skille)
 - Przygotuj w repo prywatnym .claude/skills/ wariant gitowy wiki-brain (np. wiki-brain-git): te same komendy (wiki save / ask / lint), te same zasady (jeden fakt w jednej notatce, Related z dokładnymi tytułami, HOT jako router z linią Related do wszystkich hubów, tagi [stated]/[verified]/[unverified], nie kasować), ale operacje na plikach i commitach zamiast Dysku. Oryginalnego skilla na Dysku nie ruszaj.
 - Skill ma wskazywać, że czytanie zaczyna się od HOT, potem INDEX, potem hub, potem wyszukiwanie BM25 (mniej tokenów niż czytanie wielu notatek).
@@ -143,6 +157,7 @@ Pozycje otwarte:
 ## Etap 5 (przełączenie, tylko za zgodą)
 - Praca równoległa Dysk + GitHub min. kilka dni; kryterium: wynik grafu i lintu identyczny, "wiki ask" z obu źródeł daje te same odpowiedzi na zestawie pytań testowych.
 - Dysk zostaje jako kopia zapasowa. Nic nie kasować.
+- Wyłączenie crona w Termuxie (wiki_index :07, wiki_graph :12) dopiero po spełnieniu kryteriów tego etapu i po etapie 3d; wcześniej cron nie jest ruszany.
 - Zaktualizuj CLAUDE.md i README (bez danych osobistych).
 
 ## Do zweryfikowania przed etapem 5
