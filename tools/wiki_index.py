@@ -5,10 +5,11 @@ Usage: wiki_index.py {build,search,export} [query] [--root DIR] [--db FILE] [--o
 build  reads *.txt / *.md under --root (recursive) and rebuilds --db from scratch;
 search runs a BM25 query on --db; export writes INDEX-AUTO.txt from --db.
 Logic and output format are those of the rclone version; only the source differs
-(directory instead of rclone). BOM and CRLF are tolerated, note files are never modified.
+(directory instead of rclone) and search treats l and ł as the same letter.
+BOM and CRLF are tolerated, note files are never modified.
 Python 3 stdlib only.
 """
-import argparse, collections, datetime, re, sqlite3, sys
+import argparse, collections, datetime, itertools, re, sqlite3, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -68,11 +69,25 @@ def build(root, db):
     c.commit()
     print(f"plikow: {len(notes)}")
 
+def l_variants(w, cap=6):
+    """w with every l/ł combination: the FTS5 tokenizer folds ó/ź/ń etc. but not ł.
+    More than `cap` such letters: only all-l and all-ł."""
+    w = w.lower()
+    pos = [i for i, ch in enumerate(w) if ch in "lł"]
+    combos = itertools.product("lł", repeat=len(pos)) if len(pos) <= cap else [("l",) * len(pos), ("ł",) * len(pos)]
+    out = []
+    for combo in combos:
+        v = list(w)
+        for i, ch in zip(pos, combo):
+            v[i] = ch
+        out.append("".join(v))
+    return out
+
 def search(db, q, top):
     words = re.findall(r"\w+", q)
     if not words:
         sys.exit("puste zapytanie")
-    expr = " OR ".join('"%s"*' % w for w in words)
+    expr = " OR ".join('"%s"*' % v for w in words for v in l_variants(w))
     c = connect(db)
     rows = c.execute(
         "select path, title, snippet(chunks, 2, '[', ']', ' ... ', 12), bm25(chunks) "

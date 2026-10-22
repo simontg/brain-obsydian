@@ -11,9 +11,9 @@ BOM = b"\xef\xbb\xbf"
 NOTES = {  # relative path -> (text, bom+crlf)
     "Alpha note.txt": ("Alpha note\nType: topic\n\nThe heron wades in the shallows.\n\nSecond paragraph about cormorants.", True),
     "Beta note.txt": ("# Beta note\nType: topic\n\nMentions the Alpha note and a zażółć gęślą jaźń phrase.", True),
-    "Lonely.txt": ("Lonely\nType: topic\n\nNothing links here and it links nowhere. Unique token: quokka.", False),
+    "Lonely.txt": ("Lonely\nType: topic\n\nNothing links here and it links nowhere. Unique token: quokka. Źródło danych. Ktoś lubił herbatę.", False),
     "HOT.txt": ("HOT (state on 2026-01-01, 06:50)\nType: meta\n\nRouter note about herons.", True),
-    "sub/Gamma.md": ("Gamma markdown\n\nA nested note about cormorants and unrelated text.", False),
+    "sub/Gamma.md": ("Gamma markdown\n\nA nested note about cormorants and unrelated text. Zrodlo bez ogonkow.", False),
     "_stary-old/Skipped.txt": ("Skipped\n\nXylophone must never be indexed.", False),
     ".hidden/Skipped2.txt": ("Skipped2\n\nXylophone must never be indexed either.", False),
     "INDEX-AUTO.txt": ("INDEX-AUTO\n\nXylophone derived file, must be skipped.", False),
@@ -77,6 +77,10 @@ class WikiIndex(unittest.TestCase):
         self.assertEqual(search(self.db, "quokka")[0][0], "Lonely.txt")
         self.assertIn("Beta note.txt", search(self.db, "jazn")[0])  # diacritics folded (not l-stroke, as in the rclone version)
         self.assertEqual(search(self.db, "nonexistentword")[1].strip(), "brak wynikow")
+        for query in ("zrodlo", "źródło", "ZRODLO", "zródlo"):  # l and ł are one letter
+            self.assertCountEqual(search(self.db, query)[0], ["Lonely.txt", "sub/Gamma.md"], query)
+        self.assertEqual(search(self.db, "lubil")[0], ["Lonely.txt"])  # mixed l/ł word
+        self.assertEqual(search(self.db, "lłlłlłlł")[1].strip(), "brak wynikow")  # >cap letters: no crash
         with self.assertRaises(SystemExit):
             search(self.db, "   ")
 
@@ -106,7 +110,7 @@ class WikiIndex(unittest.TestCase):
             wiki_index.build(self.root, self.db)
         self.assertEqual(search(self.db, "quokka")[0], [])  # removed note is gone
         self.assertIn("New.txt", self.export())
-        (self.root / "Lonely.txt").write_text("Lonely\nType: topic\n\nNothing links here and it links nowhere. Unique token: quokka.", encoding="utf-8")
+        (self.root / "Lonely.txt").write_bytes(BOM + NOTES["Lonely.txt"][0].encode("utf-8") if NOTES["Lonely.txt"][1] else NOTES["Lonely.txt"][0].encode("utf-8"))
         (self.root / "New.txt").unlink()
         with contextlib.redirect_stdout(io.StringIO()):
             wiki_index.build(self.root, self.db)
