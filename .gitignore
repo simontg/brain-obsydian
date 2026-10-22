@@ -6,3 +6,4 @@ INDEX-AUTO.txt
 *.pkl
 .env
 *.token
+*.db

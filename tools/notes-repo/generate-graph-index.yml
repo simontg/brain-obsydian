@@ -1,0 +1,59 @@
+# Deployed copy lives in the PRIVATE notes repo at .github/workflows/generate-graph-index.yml.
+# This file is the versioned source (code only, no data); it does not run in this repo.
+name: generate-graph-index
+# Regenerates graph/GRAPH-AUTO.json and graph/INDEX-AUTO.txt from wiki/ and commits them
+# only when the content changed (generated_at / generated-at alone do not count).
+# The scripts live in the PUBLIC repo simontg/brain-obsydian and are pinned to a commit:
+# review a new tools version, then bump TOOLS_REF below.
+on:
+  push:
+    branches: [main]
+    paths: ['wiki/**', '.github/workflows/generate-graph-index.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: generate-graph-index
+  cancel-in-progress: false
+env:
+  TOOLS_REPO: simontg/brain-obsydian
+  TOOLS_REF: 549449de513ca4d7ef2198757e24920629cc8970
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # wiki_graph.py / wiki_index.py take "modified" from the last commit of each file
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TOOLS_REPO }}
+          ref: ${{ env.TOOLS_REF }}
+          path: .tools
+          persist-credentials: false
+      - name: Generate
+        run: |
+          python3 .tools/tools/wiki_graph.py wiki -o "$RUNNER_TEMP/GRAPH-AUTO.json"
+          python3 .tools/tools/wiki_index.py build --root wiki --db "$RUNNER_TEMP/index.db"
+          python3 .tools/tools/wiki_index.py export --root wiki --db "$RUNNER_TEMP/index.db" --out "$RUNNER_TEMP/INDEX-AUTO.txt"
+          # counts only, never titles: job logs should not repeat note content
+          jq -e '.count > 0' "$RUNNER_TEMP/GRAPH-AUTO.json" > /dev/null
+          jq -c '{nodes: .count, edges: (.edges | length), lint: (.lint | map_values(length))}' "$RUNNER_TEMP/GRAPH-AUTO.json"
+          grep -m1 '^INDEX-AUTO' "$RUNNER_TEMP/INDEX-AUTO.txt" | sed 's/ | root: .*| files:/ | files:/'
+      - name: Commit if changed
+        run: |
+          mkdir -p graph
+          strip() { jq -c 'del(.generated_at)' "$1"; }
+          if [ ! -f graph/GRAPH-AUTO.json ] || [ "$(strip graph/GRAPH-AUTO.json)" != "$(strip "$RUNNER_TEMP/GRAPH-AUTO.json")" ]; then
+            cp "$RUNNER_TEMP/GRAPH-AUTO.json" graph/GRAPH-AUTO.json
+          fi
+          if [ ! -f graph/INDEX-AUTO.txt ] || ! diff -q <(tail -n +2 graph/INDEX-AUTO.txt) <(tail -n +2 "$RUNNER_TEMP/INDEX-AUTO.txt") > /dev/null; then
+            cp "$RUNNER_TEMP/INDEX-AUTO.txt" graph/INDEX-AUTO.txt
+          fi
+          git add graph/GRAPH-AUTO.json graph/INDEX-AUTO.txt
+          if git diff --cached --quiet; then echo "no content change, nothing to commit"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "graph: regenerate GRAPH-AUTO.json and INDEX-AUTO.txt from ${GITHUB_SHA::7}"
+          git pull --rebase origin main
+          git push
