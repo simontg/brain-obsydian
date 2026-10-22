@@ -9,7 +9,10 @@ Read `docs/GITHUB-ACCESS.md` for how repository access works from a Claude sessi
 - The orchestrator session only reviews each stage report, checks the result and waits for the owner's approval before the next stage. It does not do stage work itself.
 - Every stage session MUST load a skill before writing code: `lazy-senior` (minimal, optimized code, no over-engineering) for any script/page change; `to-spec` first when the task is a new script. If a skill is missing in the session, say so in the report instead of skipping silently.
 - Use skills where they fit (grill-me for owner decisions, to-spec for script specs, wiki-brain/handoff for the wiki) and save tokens: scripts over manual copying, never load whole large files, cheaper model for mechanical conversion.
-- Private notes live in the PRIVATE repo `simontg/Brain-Obsydian-NOTES` (empty as of 2026-10-22). Nothing personal ever goes into this public repo.
+- Stage report format (Polish, mandatory). First line: `STATUS: ZAMKNIĘTY` | `ZAMKNIĘTY Z UWAGAMI` | `OTWARTY`. Then: Zrobione / Zweryfikowane (with how: commit hash, counts, command) / Nie wiem / Pozycje otwarte (ID, opis, kto decyduje, czy blokuje następny etap) / Co dalej (one concrete next step; if the owner must act, exact copy-paste commands; model and effort for the next window).
+- A stage is `ZAMKNIĘTY` only when every "Zaliczone gdy" criterion in PLAN.md is verified. Any unmet or unverified criterion makes it `OTWARTY` or `ZAMKNIĘTY Z UWAGAMI` with each item listed under "Pozycje otwarte" in the PLAN.md results section. Do not claim a check you did not run; the orchestrator re-verifies key claims independently.
+- Every stage session writes its results into PLAN.md (section "Etap N: WYNIKI", with STATUS) via a PR, so later windows do not depend on chat history.
+- Private notes live in the PRIVATE repo `simontg/Brain-Obsydian-NOTES` (67 notes in `wiki/` since stage 2, 2026-10-22). Nothing personal ever goes into this public repo.
 
 ## What this is
 Personal knowledge-base tooling. Owner: Stanley (writes Polish; code, comments and technical labels in English).
