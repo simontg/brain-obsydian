@@ -2,6 +2,7 @@
 
 ## START HERE
 Read `PLAN.md` (migration plan, staged, with stop points). Do not start any stage without the owner's approval; Stage 0 is read-only.
+Read `docs/GITHUB-ACCESS.md` for how repository access works from a Claude session (tools, steps, pitfalls; verified 2026-10-22 from the owner's mobile chat).
 
 ## Working model
 - One stage = one new session (window) in this project. Each session does only its stage, then reports in Polish (done / verified / unknown) and STOPS.

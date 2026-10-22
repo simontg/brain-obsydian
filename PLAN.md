@@ -8,6 +8,9 @@
 - Test z 21.10: zadanie w chmurze MA dostęp do Dysku przez konektor (Google Drive: get_file_metadata, download_file_content, read_file_content, create_file). Brak rclone w chmurze; curl do googleapis.com z powłoki = 403. Duże odpowiedzi konektora zapisują się do pliku (przetwarzaj jq/Pythonem, nie wczytuj do kontekstu).
 - Handoff z pełnymi ID: dokument "HANDOFF-graf-brain.md" w folderze Obsidian-graf (ID folderu 1vyq6DNfJ4it8poszcPXRlkPlSaykyHEI), czytaj przez konektor Dysku.
 
+## Dostęp do GitHuba
+Zobacz docs/GITHUB-ACCESS.md. Zapis z czatu mobilnego do obu repo zweryfikowany 22.10.2026 (to odpowiada na punkt c etapu 1 i zadanie 5 etapu 1.5: działa przez narzędzia sesji add_repo + git, nie przez osobny konektor GitHuba).
+
 ## Cel
 Notatki w repo GitHub (prywatnym), generowanie grafu i indeksu przez GitHub Actions bez telefonu, skille dostępne dla Ciebie, wyszukiwanie BM25 zachowane. Dysk zostaje źródłem prawdy aż do etapu 5.
 
