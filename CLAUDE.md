@@ -3,6 +3,12 @@
 ## START HERE
 Read `PLAN.md` (migration plan, staged, with stop points). Do not start any stage without the owner's approval; Stage 0 is read-only.
 
+## Working model
+- One stage = one new session (window) in this project. Each session does only its stage, then reports in Polish (done / verified / unknown) and STOPS.
+- The orchestrator session only reviews each stage report, checks the result and waits for the owner's approval before the next stage. It does not do stage work itself.
+- Use skills where they fit (grill-me for owner decisions, to-spec for script specs, wiki-brain/handoff for the wiki) and save tokens: scripts over manual copying, never load whole large files, cheaper model for mechanical conversion.
+- Private notes live in the PRIVATE repo `simontg/Brain-Obsydian-NOTES` (empty as of 2026-10-22). Nothing personal ever goes into this public repo.
+
 ## What this is
 Personal knowledge-base tooling. Owner: Stanley (writes Polish; code, comments and technical labels in English).
 UI strings in the graph page are Polish.

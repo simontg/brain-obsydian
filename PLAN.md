@@ -26,10 +26,25 @@ Notatki w repo GitHub (prywatnym), generowanie grafu i indeksu przez GitHub Acti
 4. Sprawdź, czy sqlite3 w Pythonie ma FTS5: `python3 -c "import sqlite3;c=sqlite3.connect(':memory:');c.execute('create virtual table t using fts5(x)')"`.
 5. Raport + STOP.
 
-## Etap 1 (decyzje właściciela, nie rób nic przed odpowiedzią)
-a) Gdzie dane: REKOMENDACJA = osobne PRYWATNE repo na notatki (np. brain-obsydian-notes), a brain-obsydian zostaje publiczne z samym kodem. Alternatywa: zrobić brain-obsydian prywatnym i zrezygnować z publicznej witryny.
-b) Panel: GitHub Pages z prywatnych danych nie działa na darmowym koncie (prywatna publikacja wymaga Enterprise Cloud). Opcje: zostać przy artefakcie Claude albo publiczna strona z zaszyfrowanym plikiem grafu odszyfrowywanym hasłem w przeglądarce (niesprawdzone).
-c) Czy czat na telefonie ma konektor GitHuba z zapisem (niezweryfikowane). Bez tego "wiki save" z telefonu nie zadziała po migracji.
+## Etap 0: ZROBIONY (22.10.2026)
+Dostęp do Dysku konektorem OK (GRAPH-AUTO.json, 57 węzłów), FTS5 w Pythonie OK (SQLite 3.45.1), skille na liście sesji: wiki-brain, write-to-gdrive, handoff, to-spec, grill-me (treści nie czytano). Brak kopii wiki_index.py: potrzebna od właściciela przed etapem 3.
+
+## Etap 1: DECYZJE WŁAŚCICIELA (zatwierdzone 22.10.2026)
+a) Dane: prywatne repo `simontg/Brain-Obsydian-NOTES` (istnieje, puste). Układ: `wiki/` (notatki), `sources/` (materiały źródłowe, bez dużych PDF-ów; zalecany limit repo 1 GB), `graph/` (wygenerowany graf). Publiczne `brain-obsydian` zostaje z samym kodem.
+b) Panel: graf dostępny z repo, nie z Dysku. Publiczna strona na GitHub Pages z publicznego repo, dane grafu ZASZYFROWANE hasłem odszyfrowywanym w przeglądarce. Pages z prywatnego repo odpada (Free = Pages tylko w publicznych repo; prywatna publikacja wymaga Enterprise Cloud wg dokumentacji GitHub).
+c) Konektor GitHuba z zapisem w czacie na telefonie: według właściciela jest (niezweryfikowane przez agenta; sprawdza etap 1.5).
+d) Pilotaż (etap 1.5) PRZED etapem 2.
+e) Organizacja pracy: jeden etap = jedno nowe okno projektu. Sesja orkiestratora tylko przyjmuje raport, sprawdza wynik i czeka na zgodę właściciela.
+
+## Etap 1.5 (pilotaż na danych SYNTETYCZNYCH, bez prawdziwych notatek)
+Zadania i kryteria zaliczenia:
+1. Syntetyczny graf (ok. 10 węzłów, format jak w README) generowany Actionem i szyfrowany hasłem (hasło w sekrecie repo, nie w kodzie). Zaliczone, gdy: plik w repo jest nieczytelny bez hasła.
+2. Strona na GitHub Pages (publiczne repo) odszyfrowuje graf w przeglądarce (WebCrypto). Zaliczone, gdy: działa na telefonie i desktopie; błędne hasło daje czytelny komunikat.
+3. Aktualizacja grafu: zmień dane, uruchom Action, odśwież stronę. Zaliczone, gdy: nowe dane widoczne, a hasła nie trzeba zmieniać. Zapisać, ile razy właściciel musi wpisać hasło.
+4. Test, czy artefakt Claude może pobrać dane z GitHuba (publiczny URL i/lub konektor). Wynik zapisać wprost, także negatywny.
+5. Test zapisu z telefonu do repo przez konektor GitHuba (właściciel). Wynik zapisać wprost.
+6. Raport po polsku: co zrobione, co zweryfikowane, czego nie wiadomo. STOP do zgody właściciela.
+Zasady: żadnych prawdziwych tytułów ani danych; hasła i tokeny nigdy w commitach ani w raporcie.
 
 ## Etap 2 (eksport notatek do prywatnego repo)
 Opcja A (rekomendowana, najtaniej w tokenach): właściciel na telefonie uruchamia istniejący rclone: `rclone copy "gdrive:Claude - skille i projekty/Wiki" ~/brain-notes --drive-export-formats txt`, potem git push do prywatnego repo. Ty tylko walidujesz wynik.
