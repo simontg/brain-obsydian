@@ -37,7 +37,7 @@ UI strings in the graph page are Polish.
 - Encoding: colour = area (owning hub), shape = note type, size = incoming links, orange dot = has [unverified] claims.
   Edge style: hub solid, related dashed, link dotted; cross-area edges use a gradient.
 - Views are position functions over the same nodes: rings (`rx,ry`), net (force sim, meta nodes pinned, HOT at centre),
-  time (`tx,ty`, day-based axis), orbit/sphere (3D projection of ring/sphere coords, per-frame in `draw()`).
+  time (`tx,ty`, day-based axis), sphere (3D projection of sphere coords, per-frame in `draw()`; the orbit view was removed 2026-10-22).
 - Testing approach used so far: Playwright with a stubbed `window.claude.use("mcp")` returning synthetic graph JSON;
   check no page errors at 1280x780 and 392x820, dark and light.
 

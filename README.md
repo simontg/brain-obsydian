@@ -11,7 +11,7 @@ Code for a personal "second brain": a plain-text wiki kept in a private GitHub r
   (An older Claude artifact build that read the graph from Google Drive is retired.)
 - `tools/wiki_graph.py`, `tools/wiki_index.py` — graph and BM25 index generators (Python stdlib, SQLite FTS5), tests in `tools/tests/`.
 - `tools/notes-repo/generate-graph-index.yml` — template of the Action deployed in the private notes repo.
-- Views: Rings, Net, Time, Orbit (3D cone), Sphere (3D).
+- Views: Rings, Net, Time, Sphere (3D). The Orbit view (3D cone) was removed on 2026-10-22 at the owner's request.
 
 ## Data format (`GRAPH-AUTO.json`, generated in the private repo, committed here only encrypted)
 `generated_at`, `count`, `nodes[id,title,type,tags,summary,modified,chars,verified,stated,unverified,incoming]`,
