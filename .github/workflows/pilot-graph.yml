@@ -27,7 +27,7 @@ jobs:
           git add graph/graph.enc.json
           git commit -m "pilot: update encrypted synthetic graph" || exit 0
           git push
-      - name: Assemble site (page is an artifact fragment: add doctype, charset, viewport)
+      - name: Assemble site (the page is an artifact fragment, so add doctype, charset, viewport)
         run: |
           mkdir site
           { printf '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'; cat graph/graf-wiki.html; } > site/index.html
