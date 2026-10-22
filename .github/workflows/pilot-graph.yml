@@ -1,6 +1,3 @@
-# DRAFT, not active. Move to .github/workflows/pilot-graph.yml after the owner approves publishing to GitHub Pages.
-# Prerequisites (owner): repo secret PILOT_PASSWORD; Settings > Pages > Source = "GitHub Actions".
-# Unverified: action versions and the whole run (never executed).
 name: pilot-graph
 on:
   push:

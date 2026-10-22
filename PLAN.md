@@ -48,7 +48,7 @@ Zasady: żadnych prawdziwych tytułów ani danych; hasła i tokeny nigdy w commi
 
 ## Etap 1.5: STATUS (22.10.2026, CZĘŚCIOWO, czeka na zgodę właściciela)
 Zrobione lokalnie: dane syntetyczne (pilot/synthetic-graph.json, 10 węzłów), tools/pilot_build.py (AES-256-GCM + PBKDF2, hasło z env PILOT_PASSWORD), ścieżka wczytywania zaszyfrowanego grafu w graph/graf-wiki.html (tylko gdy brak window.claude). Test lokalny Playwright: błędne hasło daje komunikat, dobre odszyfrowuje, 392 i 1280 px, bez błędów strony.
-Niezrobione: workflow GitHub Actions + Pages (szkic: pilot/pilot-graph.yml.draft, nieaktywny; tworzenie publicznej powierzchni zablokowano, wymaga zgody), zadania 3 (na Actionie), 4, 5.
+Niezrobione: workflow GitHub Actions + Pages (workflow .github/workflows/pilot-graph.yml dodany za zgodą właściciela, jeszcze nieuruchomiony; wymaga sekretu PILOT_PASSWORD i Pages = GitHub Actions), zadania 3 (na Actionie), 4, 5.
 
 ## Etap 2 (eksport notatek do prywatnego repo)
 Opcja A (rekomendowana, najtaniej w tokenach): właściciel na telefonie uruchamia istniejący rclone: `rclone copy "gdrive:Claude - skille i projekty/Wiki" ~/brain-notes --drive-export-formats txt`, potem git push do prywatnego repo. Ty tylko walidujesz wynik.
