@@ -49,9 +49,16 @@ Zadania i kryteria zaliczenia:
 6. Raport po polsku: co zrobione, co zweryfikowane, czego nie wiadomo. STOP do zgody właściciela.
 Zasady: żadnych prawdziwych tytułów ani danych; hasła i tokeny nigdy w commitach ani w raporcie.
 
-## Etap 1.5: STATUS (22.10.2026, CZĘŚCIOWO, czeka na zgodę właściciela)
-Zrobione lokalnie: dane syntetyczne (pilot/synthetic-graph.json, 10 węzłów), tools/pilot_build.py (AES-256-GCM + PBKDF2, hasło z env PILOT_PASSWORD), ścieżka wczytywania zaszyfrowanego grafu w graph/graf-wiki.html (tylko gdy brak window.claude). Test lokalny Playwright: błędne hasło daje komunikat, dobre odszyfrowuje, 392 i 1280 px, bez błędów strony.
-Niezrobione: workflow GitHub Actions + Pages (workflow .github/workflows/pilot-graph.yml dodany za zgodą właściciela, jeszcze nieuruchomiony; wymaga sekretu PILOT_PASSWORD i Pages = GitHub Actions), zadania 3 (na Actionie), 4, 5.
+## Etap 1.5: WYNIKI (22.10.2026)
+Zaliczone (zweryfikowane):
+1. Graf syntetyczny generowany Actionem (pilot/synthetic-graph.json, tools/pilot_build.py, .github/workflows/pilot-graph.yml), szyfrowany AES-256-GCM + PBKDF2, hasło w sekrecie PILOT_PASSWORD. Plik graph/graph.enc.json w repo nieczytelny (0 trafień na słowo "Synthetic"). Przebiegi Action na main: build + commit bota + deploy, zielone.
+2. Strona na GitHub Pages (https://simontg.github.io/brain-obsydian/) odszyfrowuje graf w przeglądarce. Błędne hasło: komunikat "Błędne hasło lub uszkodzony plik" (sprawdzone na żywo przez agenta, 1280 i 392 px). Dobre hasło na komputerze i telefonie: potwierdził właściciel.
+3. Aktualizacja: dodany węzeł (11 zamiast 10) przez PR i Action, hasło bez zmian, nowe dane widoczne (potwierdził właściciel). Hasło wpisywane raz na komputerze i raz na telefonie; odświeżenie strony ani "Odśwież" nie pytają ponownie (hasło w sessionStorage, tylko do zamknięcia karty). Po zamknięciu karty pytanie wraca (wg właściciela, zgodne z projektem).
+4. Artefakt Claude NIE pobierze danych z GitHuba: fetch() z artefaktu do publicznego URL = "TypeError: Failed to fetch" (zrzut właściciela); konektor "GitHub" w artefakcie = "No matching connector found" (na koncie nie ma takiego konektora, sprawdzone listą konektorów). Artefakt-graf dalej czyta z Dysku.
+Uwagi: każdy przebieg Action commituje nowy graph/graph.enc.json na main (losowa sól i IV), więc przed lokalną edycją trzeba zrobić git pull. Commit bota na main przeszedł (brak ochrony gałęzi).
+
+Niezweryfikowane przez agenta:
+5. Zapis z czatu mobilnego do repo: założenie 1c ("konektor GitHuba w czacie") jest błędne co do mechanizmu. Zapis działa przez narzędzia chmurowej sesji claude-code-remote (add_repo z access "push"), opis i wcześniejszy udany test w docs/GITHUB-ACCESS.md (zrobiony przez inną sesję, nie powtórzony tu). list_repos pokazuje can_push=true dla obu repo. Własny test agenta (add_repo push na Brain-Obsydian-NOTES) został odrzucony przez system uprawnień sesji, więc nie wiadomo, czy ta konkretna sesja mogłaby zapisać. Hipoteza właściciela: orkiestrator dodał repo z access "read" (niepotwierdzona).
 
 ## Etap 2 (eksport notatek do prywatnego repo)
 Opcja A (rekomendowana, najtaniej w tokenach): właściciel na telefonie uruchamia istniejący rclone: `rclone copy "gdrive:Claude - skille i projekty/Wiki" ~/brain-notes --drive-export-formats txt`, potem git push do prywatnego repo. Ty tylko walidujesz wynik.
