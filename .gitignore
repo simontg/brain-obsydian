@@ -1,0 +1,8 @@
+# Personal data never goes into this PUBLIC repo
+wiki/
+data/
+GRAPH-AUTO.json
+INDEX-AUTO.txt
+*.pkl
+.env
+*.token
