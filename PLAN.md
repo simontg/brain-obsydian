@@ -169,7 +169,7 @@ NIEZWERYFIKOWANE / niezrobione: (a) odszyfrowanie nowej wersji (z notatką testo
 Pozycje otwarte:
 - O3d-1. ROZWIĄZANE (22.10.2026): właściciel wygenerował token `brain-obsydian` od nowa (Repository access tylko `brain-obsydian`, Read and Write do kodu) i zapisał go w sekrecie Actions `PUBLIC_REPO_TOKEN`. Poprzednia zapisana wartość nie była ważnym tokenem (HTTP 401; przyczyny niezweryfikowane). Token do telefonu (`Brain-Obsydian-NOTES`, tylko prywatne repo) nie ma związku z workflow i został nietknięty.
 - O3d-2. ROZWIĄZANE (22.10.2026): nowa wersja workflow jest na `main` prywatnego repo (merge PR Brain-Obsydian-NOTES#1, commit scalenia 5c9aa41), pierwsza publikacja prawdziwego grafu wykonana i sprawdzona (pkt 9-11).
-- O3d-3. Gałąź testowa `stage-3d-test` w prywatnym repo jest scalona i zbędna; do usunięcia przez właściciela przyciskiem "Delete branch" na stronie PR #1 repo notatek (orkiestrator próbował 22.10.2026, klasyfikator uprawnień odrzucił dostęp z zapisem). Nie blokuje.
+- O3d-3. ROZWIĄZANE (22.10.2026): właściciel usunął gałąź `stage-3d-test` w repo notatek (orkiestrator sprawdził `git ls-remote --heads`: została tylko `main`). Właściciel usunął też nieużywany sekret `PILOT_PASSWORD` w tym repo (potwierdzenie właściciela; agent nie ma wglądu w sekrety).
 - O3d-5. ROZWIĄZANE (22.10.2026): PR #12 sprawdzony i scalony przez orkiestratora (merge 5331200); wdrożony plik w repo notatek identyczny z szablonem (sprawdzone `cmp`).
 - O3d-4. ROZWIĄZANE (22.10.2026): test koniec-do-końca wykonany na notatce syntetycznej (pkt 13).
 - O6 (z 3a): ZAAKCEPTOWANE wg decyzji E4 etapu 5: płaska data notatek z eksportu zostaje, nowe zmiany mają daty z gita.

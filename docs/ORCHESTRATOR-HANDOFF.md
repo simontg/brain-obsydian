@@ -15,7 +15,7 @@ Projekt: przeniesienie osobistej bazy wiedzy (wiki) z Dysku Google na GitHuba, z
 - Token 1 (telefon, `~/notes-git`): fine-grained, tylko `Brain-Obsydian-NOTES`.
 - Token 2: sekret Actions `PUBLIC_REPO_TOKEN` w repo notatek; fine-grained, tylko `brain-obsydian`, Contents: Read and write; bez daty wygaśnięcia. Pozwala zmienić także kod strony, więc przy podejrzeniu wycieku: unieważnić w ustawieniach GitHuba, wygenerować nowy, wpisać do sekretu.
 - `GRAPH_PASSWORD`: sekret Actions w repo notatek, hasło do grafu (co najmniej 20 znaków; workflow odmawia publikacji krótszego). Zaszyfrowane wersje grafu zostają na zawsze w publicznej historii gita, więc bezpieczeństwo treści zależy wyłącznie od siły hasła.
-- `PILOT_PASSWORD` (sekret w tym repo, z pilotażu): nieużywany, można usunąć.
+- `PILOT_PASSWORD` (sekret z pilotażu): usunięty przez właściciela 22.10.2026.
 - Agent nigdy nie widzi ani nie wypisuje wartości sekretów. Workflow ma tryb kontrolny `check_only` (ręczne uruchomienie), który sprawdza oba sekrety bez ich wypisywania.
 
 ## 3. Przebieg migracji (22.10.2026)
@@ -31,11 +31,9 @@ Projekt: przeniesienie osobistej bazy wiedzy (wiki) z Dysku Google na GitHuba, z
 ## 4. Sprawy otwarte (nic nie blokuje codziennego używania)
 1. Pierwszy prawdziwy „wiki save” (bez słowa „git”): sprawdzić, że czat dołącza repo notatek, a nie Dysk; odpowiedź podaje skrót commitu; w repo pojawia się commit bota; licznik notatek na stronie rośnie, jeśli doszła notatka. Sprawdzone dotąd tylko „wiki ask” i „wiki git save”.
 2. Widok „Czas” na stronie: czy nowe zapisy mają właściwe daty. Stare notatki mają jedną wspólną datę z eksportu (zaakceptowane, O6).
-3. Usunąć gałąź `stage-3d-test` w repo notatek (przycisk „Delete branch” na stronie PR #1 repo notatek).
-4. Usunąć nieużywany sekret `PILOT_PASSWORD` w tym repo (opcjonalnie).
-5. O22: porządki znalezione przez lint (2 wiersze INDEX zlepione w jedną linię, 7 notatek z więcej niż 5 wpisami `Related:`); tylko za zgodą właściciela, przez „wiki lint”.
-6. O14: skrypty przypięte do konkretnego commitu (`TOOLS_REF`); przy zmianie skryptów najpierw przegląd, potem podbicie `TOOLS_REF` w workflow repo notatek.
-7. Niezmierzone: koszt tokenów jednego „wiki save”.
+3. O22: porządki znalezione przez lint (2 wiersze INDEX zlepione w jedną linię, 7 notatek z więcej niż 5 wpisami `Related:`); tylko za zgodą właściciela, przez „wiki lint”.
+4. O14: skrypty przypięte do konkretnego commitu (`TOOLS_REF`); przy zmianie skryptów najpierw przegląd, potem podbicie `TOOLS_REF` w workflow repo notatek.
+5. Niezmierzone: koszt tokenów jednego „wiki save”.
 
 ## 5. Jak pracować dalej (dla następnej sesji)
 - Zmiana kodu strony lub skryptów: w tym repo, przez gałąź i PR; dane testowe tylko syntetyczne; test strony Playwrightem (1280x780 i 392x820, jasny i ciemny, bez błędów strony). Przed kodem skill `lazy-senior` (zasada z CLAUDE.md).
