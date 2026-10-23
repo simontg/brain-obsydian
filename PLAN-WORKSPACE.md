@@ -51,7 +51,7 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 
 ## R0: WYNIKI
 
-STATUS: ZAMKNIĘTY Z UWAGAMI (data 2026-10-23; tylko odczyt Dysku; lista szczegółowa w prywatnym repo notatek).
+STATUS: ZAMKNIĘTY (data 2026-10-23; tylko odczyt Dysku; lista szczegółowa w prywatnym repo notatek).
 
 Liczby (rozmiar = pole fileSize z API; dla Dokumentów i Arkuszy Google wartość raportowana, niezweryfikowana):
 
@@ -77,4 +77,4 @@ Liczby (rozmiar = pole fileSize z API; dla Dokumentów i Arkuszy Google wartoś�
 - Plików > 50 MB: 0 (folder A: 0, folder B: 0).
 - Podfolder Wiki (w A, bez szczegółów): 68 plików, 180831 B.
 - Skróty (shortcuts): 0.
-- Weryfikacja „nic nie zmienione”: drugi przebieg tylko częściowy (część folderów nie została ponownie wylistowana); w ponownie wylistowanych części różnic brak; zapytanie o pliki utworzone po przebiegu 1: 0 wyników.
+- Weryfikacja „nic nie zmienione”: zapytanie Drive o pliki zmienione lub utworzone po starcie okna R0 (2026-10-23T05:09Z): 0 wyników (sprawdził orkiestrator); drugi przebieg okna częściowy, w sprawdzonej części bez różnic.
