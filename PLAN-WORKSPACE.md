@@ -12,6 +12,11 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - W4. Skille: jeden nowy skill `write-to-github` (wspólny przepis zapisu i odczytu w repo) plus krótka zmiana w `read-whole`, `handoff`, `skill-suggestions` (domyślnie repo, Dysk na polecenie). Bez osobnych gitowych kopii każdego skilla.
 - W5. (zmiana 23.10.2026, zastępuje decyzję „A”) Stały, swobodny dostęp do odczytu i zapisu dla agentów na koncie właściciela we WSZYSTKICH miejscach: Claude Code w chmurze, zwykły czat (telefon) i Claude Code na komputerze (VS Code). Jak najmniej pytań o zgodę. W zamian zabezpieczenie po stronie GitHuba: zakaz force-push i usuwania `main` w repo notatek (historia zostaje, każdą zmianę da się cofnąć).
 
+- W6. (23.10.2026) Komputer (Windows, VS Code): Claude Code działa w WSL (Linux w Windows), nie natywnie w Windows. Powód: 66 z 69 plików w `wiki/` ma w nazwie dwukropek, którego Windows nie dopuszcza w nazwach plików, więc natywny klon na Windows nie wypakuje notatek; zmiany nazw notatek nie robimy.
+
+## Zrobione poza etapami (23.10.2026)
+- Repo notatek: `.gitattributes` z `* -text` (commit 583981d): git nie zmienia końców linii w żadnym klonie (notatki zostają UTF-8 z BOM i CRLF). Przy dodaniu `git add --renormalize .` nie zmienił żadnego pliku.
+
 ## Ustalone fakty o dostępie (dokumentacja środowiska, 23.10.2026)
 - Sesja Claude Code w chmurze uruchomiona z wybranym repo ma je od startu (odczyt i zapis) bez `add_repo` i bez zgody wpisywanej w czacie.
 - Zwykły czat dołącza repo przez `add_repo` (działa, etap 5 PLAN.md).
@@ -28,7 +33,7 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - Dostęp, trzy tryby, wspólne dla wszystkich skilli (opisane raz, w `write-to-github`):
   (a) Claude Code w chmurze: sesja startuje z repo notatek wybranym (bez `add_repo`); środowisko chmurowe z tym repo jako domyślnym, jeśli ustawienia na to pozwalają (do sprawdzenia);
   (b) zwykły czat: `add_repo` robi skill;
-  (c) komputer (VS Code): lokalny klon repo z zapisanym logowaniem (Git Credential Manager albo token fine-grained tylko do repo notatek), prawdziwy Python, reguły zezwoleń w `~/.claude/settings.json` właściciela; skille wykrywają lokalny klon, gdy brak `add_repo`. Lokalny `~/.claude/CLAUDE.md` przestaje odsyłać do chmury.
+  (c) komputer: WSL (W6). Kroki właściciela: instalacja WSL (Ubuntu), rozszerzenie VS Code do WSL, Claude Code uruchamiany w WSL; klon repo notatek w systemie plików Linuksa (`~/...`), NIE w `/mnt/c/...` (to dysk Windows, dwukropki znów nie przejdą); logowanie gita w WSL tokenem fine-grained tylko do repo notatek; `python3` w WSL. Reguły zezwoleń w `~/.claude/settings.json` w WSL. Uwaga: `~/.claude/CLAUDE.md` w WSL to inny plik niż ten w Windows; obecna reguła w Windows („na tym komputerze wiki nie działa”) zostaje dla Claude Code uruchamianego poza WSL. Skill `wiki-brain-git` 1.3 (i `write-to-github`): gdy brak `add_repo`, a jest lokalny klon i działa git, praca na klonie (zawsze `pull --rebase` przed zmianą).
 - Ochrona na GitHubie (właściciel, ustawienia repo notatek → Rules): blokada force-push i usuwania `main`.
 - Zaliczone gdy: struktura na `main`, Action grafu nie uruchomiony przez zmianę poza `wiki/` albo zielony, graf bez zmian (liczba węzłów); w każdym z trzech trybów nowa sesja czyta i zapisuje plik testowy w repo, a liczba pytań o zgodę jest zapisana (cel: zero w trybach a i c); próba force-push na `main` odrzucona przez GitHub.
 ### R2. Skill `write-to-github` i zmiany w trzech skillach
