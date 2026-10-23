@@ -10,7 +10,12 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - W2. Zakres przeniesienia: najpierw inwentaryzacja tylko do odczytu, potem właściciel wybiera, co idzie.
 - W3. Po przeniesieniu GitHub jest źródłem prawdy, Dysk kopią tylko do odczytu (jak przy wiki). `write-to-gdrive` zostaje, używany tylko na wyraźne polecenie. Nic na Dysku nie kasować.
 - W4. Skille: jeden nowy skill `write-to-github` (wspólny przepis zapisu i odczytu w repo) plus krótka zmiana w `read-whole`, `handoff`, `skill-suggestions` (domyślnie repo, Dysk na polecenie). Bez osobnych gitowych kopii każdego skilla.
-- W5. (zmiana 23.10.2026, zastępuje decyzję „A”) Stały, swobodny dostęp do odczytu i zapisu dla agentów na koncie właściciela we WSZYSTKICH miejscach: Claude Code w chmurze, zwykły czat (telefon) i Claude Code na komputerze (VS Code). Jak najmniej pytań o zgodę. W zamian zabezpieczenie po stronie GitHuba: zakaz force-push i usuwania `main` w repo notatek (historia zostaje, każdą zmianę da się cofnąć).
+- W5. (zmiana 23.10.2026, zastępuje decyzję „A”) Stały, swobodny dostęp do odczytu i zapisu dla agentów na koncie właściciela we WSZYSTKICH miejscach: Claude Code w chmurze, zwykły czat (telefon) i Claude Code na komputerze (VS Code). Jak najmniej pytań o zgodę. W zamian zabezpieczenie po stronie GitHuba: zakaz force-push i usuwania `main` w repo notatek (historia zostaje, każdą zmianę da się cofnąć). Uwaga: na obecnym planie GitHub tej blokady nie egzekwuje, patrz W14.
+- W13. (23.10.2026; wcześniej w PR #21 jako „W6”) Komputer (Windows, VS Code): Claude Code działa w WSL (Linux w Windows), nie natywnie w Windows. Powód: 66 z 69 plików w `wiki/` ma w nazwie dwukropek, którego Windows nie dopuszcza w nazwach plików, więc natywny klon na Windows nie wypakuje notatek; zmiany nazw notatek nie robimy. Właściciel potwierdził 23.10.2026, że komputer przez WSL już czyta i zapisuje repo notatek („wiki save” działa).
+- W14. (23.10.2026, po R1) Ochrona `main` na GitHubie: ruleset (blokada force-push i usuwania) utworzony, ale GitHub go nie egzekwuje w prywatnym repo na obecnym planie (komunikat GitHuba wymaga konta organizacji Team). Decyzja właściciela: A, zostaje bez ochrony GitHuba. Zabezpieczenie: reguły `deny` w `.claude/settings.json` repo notatek (działają tylko w Claude Code: chmura i komputer; nie w czacie ani przy ręcznym gicie), zasada „nigdy nie kasuj, tylko `archiwum/`”, historia gita.
+
+## Zrobione poza etapami (23.10.2026)
+- Repo notatek: `.gitattributes` z `* -text` (commit 583981d): git nie zmienia końców linii w żadnym klonie (notatki zostają UTF-8 z BOM i CRLF). Przy dodaniu `git add --renormalize .` nie zmienił żadnego pliku.
 
 ## Ustalone fakty o dostępie (dokumentacja środowiska, 23.10.2026)
 - Sesja Claude Code w chmurze uruchomiona z wybranym repo ma je od startu (odczyt i zapis) bez `add_repo` i bez zgody wpisywanej w czacie.
@@ -28,9 +33,9 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - Dostęp, trzy tryby, wspólne dla wszystkich skilli (opisane raz, w `write-to-github`):
   (a) Claude Code w chmurze: sesja startuje z repo notatek wybranym (bez `add_repo`); środowisko chmurowe z tym repo jako domyślnym, jeśli ustawienia na to pozwalają (do sprawdzenia);
   (b) zwykły czat: `add_repo` robi skill;
-  (c) komputer (VS Code): lokalny klon repo z zapisanym logowaniem (Git Credential Manager albo token fine-grained tylko do repo notatek), prawdziwy Python, reguły zezwoleń w `~/.claude/settings.json` właściciela; skille wykrywają lokalny klon, gdy brak `add_repo`. Lokalny `~/.claude/CLAUDE.md` przestaje odsyłać do chmury.
-- Ochrona na GitHubie (właściciel, ustawienia repo notatek → Rules): blokada force-push i usuwania `main`.
-- Zaliczone gdy: struktura na `main`, Action grafu nie uruchomiony przez zmianę poza `wiki/` albo zielony, graf bez zmian (liczba węzłów); w każdym z trzech trybów nowa sesja czyta i zapisuje plik testowy w repo, a liczba pytań o zgodę jest zapisana (cel: zero w trybach a i c); próba force-push na `main` odrzucona przez GitHub.
+  (c) komputer: WSL (W13). Klon repo notatek w systemie plików Linuksa (`~/...`), NIE w `/mnt/c/...` (dwukropki); logowanie gita w WSL już działa (stan na 23.10.2026, ustawione przez właściciela); `python3` w WSL; reguły zezwoleń w `~/.claude/settings.json` w WSL. `~/.claude/CLAUDE.md` w WSL to inny plik niż w Windows. Skill `wiki-brain-git` (i `write-to-github`): gdy brak `add_repo`, a jest lokalny klon i działa git, praca na klonie (zawsze `pull --rebase` przed zmianą).
+- Ochrona na GitHubie (właściciel, ustawienia repo notatek → Rules): blokada force-push i usuwania `main`. Wynik: nieegzekwowana na obecnym planie (W14); zamiast niej reguły `deny` w `.claude/settings.json`.
+- Zaliczone gdy: struktura na `main`, Action grafu nie uruchomiony przez zmianę poza `wiki/` albo zielony, graf bez zmian (liczba węzłów); w każdym z trzech trybów nowa sesja czyta i zapisuje plik testowy w repo, a liczba pytań o zgodę jest zapisana (cel: zero w trybach a i c); reguły `deny` (force-push, usuwanie gałęzi, `git rm`) są w `.claude/settings.json` na `main` (zmiana 23.10.2026 zamiast „force-push odrzucony przez GitHub”, W14; próby force-push na `main` nie robimy).
 ### R2. Skill `write-to-github` i zmiany w trzech skillach
 - `to-spec`, potem `lazy-senior`. Zasady jak w `wiki-brain-git` (Edit dla istniejących plików, znajdź przed utworzeniem, nigdy nie kasuj, jeden commit, `pull --rebase`, `ls-remote` = HEAD). Test na repo syntetycznym, potem jeden mały prawdziwy zapis.
 - Nowe wersje `read-whole`, `handoff`, `skill-suggestions`: domyślnie repo, Dysk na wyraźne polecenie. Kopie wszystkich SKILL.md w `skille/`.
@@ -45,7 +50,7 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - Historia gita jest trwała: nie wrzucać sekretów ani danych innych osób; usunięcie pliku nie usuwa go z historii.
 - Duże pliki binarne powiększają repo na zawsze.
 - Każdy nowy skill to kolejna instalacja kartą przez właściciela.
-- Swobodny zapis dla wielu agentów: błąd agenta trafia prosto na `main`. Zabezpieczenie: historia gita, zakaz force-push i usuwania `main`, zasada „nigdy nie kasuj, tylko `archiwum/`”.
+- Swobodny zapis dla wielu agentów: błąd agenta trafia prosto na `main`. Zabezpieczenie: historia gita, reguły `deny` w Claude Code, zasada „nigdy nie kasuj, tylko `archiwum/`”. GitHub nie blokuje force-push (W14), więc błąd w czacie lub przy ręcznym gicie może przepisać `main`; odtworzenie tylko z innego klonu.
 - Niesprawdzone: czy reguły zezwoleń w repo wyłączają pytania systemu bezpieczeństwa sesji chmurowej (np. o scalanie PR); części tych pytań nie da się wyłączyć z poziomu repo.
 - Zapisane logowanie na komputerze daje każdemu programowi z dostępem do tego konta Windows zapis do repo notatek.
 
