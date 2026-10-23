@@ -48,3 +48,33 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - Swobodny zapis dla wielu agentów: błąd agenta trafia prosto na `main`. Zabezpieczenie: historia gita, zakaz force-push i usuwania `main`, zasada „nigdy nie kasuj, tylko `archiwum/`”.
 - Niesprawdzone: czy reguły zezwoleń w repo wyłączają pytania systemu bezpieczeństwa sesji chmurowej (np. o scalanie PR); części tych pytań nie da się wyłączyć z poziomu repo.
 - Zapisane logowanie na komputerze daje każdemu programowi z dostępem do tego konta Windows zapis do repo notatek.
+
+## R0: WYNIKI
+
+STATUS: ZAMKNIĘTY (data 2026-10-23; tylko odczyt Dysku; lista szczegółowa w prywatnym repo notatek).
+
+Liczby (rozmiar = pole fileSize z API; dla Dokumentów i Arkuszy Google wartość raportowana, niezweryfikowana):
+
+| Folder | Typ | Pliki | Suma rozmiarów (B) |
+|---|---|---|---|
+| folder A | Dokument Google | 16 | 106518 |
+| folder A | Arkusz Google | 5 | 6949 |
+| folder A | PDF | 1 | 142016 |
+| folder A | obraz (PNG) | 101 | 23895212 |
+| folder A | Markdown | 24 | 114593 |
+| folder A | Python | 3 | 19959 |
+| folder A | JSON | 1 | 76628 |
+| folder A | HTML | 1 | 28062 |
+| folder A | CSV | 2 | 931 |
+| folder A | TXT | 1 | 167 |
+| folder A razem | | 155 | 24391035 |
+| folder B | PDF | 18 | 66152850 |
+| folder B | EPUB | 2 | 16172978 |
+| folder B | ZIP | 3 | 8661 |
+| folder B | JSON | 1 | 2394 |
+| folder B razem | | 24 | 82336883 |
+
+- Plików > 50 MB: 0 (folder A: 0, folder B: 0).
+- Podfolder Wiki (w A, bez szczegółów): 68 plików, 180831 B.
+- Skróty (shortcuts): 0.
+- Weryfikacja „nic nie zmienione”: zapytanie Drive o pliki zmienione lub utworzone po starcie okna R0 (2026-10-23T05:09Z): 0 wyników (sprawdził orkiestrator); drugi przebieg okna częściowy, w sprawdzonej części bez różnic.
