@@ -10,7 +10,7 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - W2. Zakres przeniesienia: najpierw inwentaryzacja tylko do odczytu, potem właściciel wybiera, co idzie.
 - W3. Po przeniesieniu GitHub jest źródłem prawdy, Dysk kopią tylko do odczytu (jak przy wiki). `write-to-gdrive` zostaje, używany tylko na wyraźne polecenie. Nic na Dysku nie kasować.
 - W4. Skille: jeden nowy skill `write-to-github` (wspólny przepis zapisu i odczytu w repo) plus krótka zmiana w `read-whole`, `handoff`, `skill-suggestions` (domyślnie repo, Dysk na polecenie). Bez osobnych gitowych kopii każdego skilla.
-- W5. Claude Code na komputerze właściciela (VS Code) zostaje bez dostępu do repo (decyzja „A” z 23.10.2026); lokalny `~/.claude/CLAUDE.md` odsyła do czatu albo chmury.
+- W5. (zmiana 23.10.2026, zastępuje decyzję „A”) Stały, swobodny dostęp do odczytu i zapisu dla agentów na koncie właściciela we WSZYSTKICH miejscach: Claude Code w chmurze, zwykły czat (telefon) i Claude Code na komputerze (VS Code). Jak najmniej pytań o zgodę. W zamian zabezpieczenie po stronie GitHuba: zakaz force-push i usuwania `main` w repo notatek (historia zostaje, każdą zmianę da się cofnąć).
 
 ## Ustalone fakty o dostępie (dokumentacja środowiska, 23.10.2026)
 - Sesja Claude Code w chmurze uruchomiona z wybranym repo ma je od startu (odczyt i zapis) bez `add_repo` i bez zgody wpisywanej w czacie.
@@ -22,10 +22,15 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - Lista podfolderów i plików z typem (Dokument Google, PDF, obraz, inne), rozmiarem i datą zmiany; zapis listy w repo notatek (`projekty/_inwentaryzacja.md`, prywatnie). Do tego pliku w publicznym repo trafiają tylko liczby.
 - Zaliczone gdy: liczby plików i rozmiary zsumowane per typ; wskazane pliki większe niż 50 MB; nic na Dysku nie zmienione.
 - Właściciel zaznacza w liście, co przenosimy.
-### R1. Struktura i konwencje repo
+### R1. Struktura, konwencje i dostęp
 - Foldery: `projekty/<nazwa>/`, `zrodla/`, `skille/` (kopie SKILL.md), `archiwum/` (już jest), `wiki/` bez zmian. `README.md` repo z zasadami: nazwy plików, format (Markdown/tekst, UTF-8), duże pliki, zakaz kasowania (tylko `archiwum/`), jeden commit na zmianę, `pull --rebase`, bez force-push.
 - `.claude/settings.json` z regułami zezwoleń dla gita w tym repo.
-- Zaliczone gdy: struktura na `main`, Action grafu nie uruchomiony przez zmianę poza `wiki/` albo zielony, graf bez zmian (liczba węzłów).
+- Dostęp, trzy tryby, wspólne dla wszystkich skilli (opisane raz, w `write-to-github`):
+  (a) Claude Code w chmurze: sesja startuje z repo notatek wybranym (bez `add_repo`); środowisko chmurowe z tym repo jako domyślnym, jeśli ustawienia na to pozwalają (do sprawdzenia);
+  (b) zwykły czat: `add_repo` robi skill;
+  (c) komputer (VS Code): lokalny klon repo z zapisanym logowaniem (Git Credential Manager albo token fine-grained tylko do repo notatek), prawdziwy Python, reguły zezwoleń w `~/.claude/settings.json` właściciela; skille wykrywają lokalny klon, gdy brak `add_repo`. Lokalny `~/.claude/CLAUDE.md` przestaje odsyłać do chmury.
+- Ochrona na GitHubie (właściciel, ustawienia repo notatek → Rules): blokada force-push i usuwania `main`.
+- Zaliczone gdy: struktura na `main`, Action grafu nie uruchomiony przez zmianę poza `wiki/` albo zielony, graf bez zmian (liczba węzłów); w każdym z trzech trybów nowa sesja czyta i zapisuje plik testowy w repo, a liczba pytań o zgodę jest zapisana (cel: zero w trybach a i c); próba force-push na `main` odrzucona przez GitHub.
 ### R2. Skill `write-to-github` i zmiany w trzech skillach
 - `to-spec`, potem `lazy-senior`. Zasady jak w `wiki-brain-git` (Edit dla istniejących plików, znajdź przed utworzeniem, nigdy nie kasuj, jeden commit, `pull --rebase`, `ls-remote` = HEAD). Test na repo syntetycznym, potem jeden mały prawdziwy zapis.
 - Nowe wersje `read-whole`, `handoff`, `skill-suggestions`: domyślnie repo, Dysk na wyraźne polecenie. Kopie wszystkich SKILL.md w `skille/`.
@@ -40,3 +45,6 @@ Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dys
 - Historia gita jest trwała: nie wrzucać sekretów ani danych innych osób; usunięcie pliku nie usuwa go z historii.
 - Duże pliki binarne powiększają repo na zawsze.
 - Każdy nowy skill to kolejna instalacja kartą przez właściciela.
+- Swobodny zapis dla wielu agentów: błąd agenta trafia prosto na `main`. Zabezpieczenie: historia gita, zakaz force-push i usuwania `main`, zasada „nigdy nie kasuj, tylko `archiwum/`”.
+- Niesprawdzone: czy reguły zezwoleń w repo wyłączają pytania systemu bezpieczeństwa sesji chmurowej (np. o scalanie PR); części tych pytań nie da się wyłączyć z poziomu repo.
+- Zapisane logowanie na komputerze daje każdemu programowi z dostępem do tego konta Windows zapis do repo notatek.
