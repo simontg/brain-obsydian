@@ -35,7 +35,7 @@ Projekt: przeniesienie osobistej bazy wiedzy (wiki) z Dysku Google na GitHuba, z
 4. O14: skrypty przypięte do konkretnego commitu (`TOOLS_REF`); przy zmianie skryptów najpierw przegląd, potem podbicie `TOOLS_REF` w workflow repo notatek.
 5. Niezmierzone: koszt tokenów jednego „wiki save”.
 6. Claude Code na komputerze właściciela (VS Code) nie ma narzędzi `add_repo`; decyzja 23.10.2026: wiki tylko w czacie i w Claude Code w chmurze, lokalny `~/.claude/CLAUDE.md` odsyła tam.
-7. Następny projekt: wspólny folder roboczy na GitHubie (projekty, źródła, skille) w repo notatek: `PLAN-WORKSPACE.md`, etap R0 (inwentaryzacja Dysku, tylko odczyt) czeka na start.
+7. Następny projekt: wspólny folder roboczy na GitHubie (projekty, źródła, skille) w repo notatek: `PLAN-WORKSPACE.md`; stan 23.10.2026: R0 zamknięty, R1 zamknięty z uwagami (tryb komputera wydzielony do R1c), następny etap R2 (skill `write-to-github`).
 
 ## 5. Jak pracować dalej (dla następnej sesji)
 - Zmiana kodu strony lub skryptów: w tym repo, przez gałąź i PR; dane testowe tylko syntetyczne; test strony Playwrightem (1280x780 i 392x820, jasny i ciemny, bez błędów strony). Przed kodem skill `lazy-senior` (zasada z CLAUDE.md).
