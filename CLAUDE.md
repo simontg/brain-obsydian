@@ -1,7 +1,7 @@
 # CLAUDE.md — brain-obsydian
 
 ## START HERE
-The migration (stages 0-5) is FINISHED (2026-10-22). Read `docs/ORCHESTRATOR-HANDOFF.md` first: current setup, secrets, open items, how to work. `PLAN.md` keeps the stage history and evidence; the working model below applies if staged work is resumed.
+The migration (stages 0-5) is FINISHED (2026-10-22). Read `docs/ORCHESTRATOR-HANDOFF.md` first: current setup, secrets, open items, how to work. `PLAN.md` keeps the stage history and evidence. Next project (staged, same working model below): `PLAN-WORKSPACE.md` (shared GitHub workspace for projects, sources and skills in the notes repo).
 Read `docs/GITHUB-ACCESS.md` for how repository access works from a Claude session (tools, steps, pitfalls; verified 2026-10-22 from the owner's mobile chat).
 
 ## Working model
