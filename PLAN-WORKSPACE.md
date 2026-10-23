@@ -78,3 +78,13 @@ Liczby (rozmiar = pole fileSize z API; dla Dokumentów i Arkuszy Google wartoś�
 - Podfolder Wiki (w A, bez szczegółów): 68 plików, 180831 B.
 - Skróty (shortcuts): 0.
 - Weryfikacja „nic nie zmienione”: zapytanie Drive o pliki zmienione lub utworzone po starcie okna R0 (2026-10-23T05:09Z): 0 wyników (sprawdził orkiestrator); drugi przebieg okna częściowy, w sprawdzonej części bez różnic.
+
+## Decyzje właściciela po R0 (23.10.2026, z orkiestratorem, grill-me)
+- W6. Źródła w folderze B (artykuły i książki): wszystkie 20 plików (PDF/EPUB, ok. 82 MB, największy ok. 19 MB) do `zrodla/`, bez zmian.
+- W7. Aktywny projekt badawczy (folder A, 121 plików, codzienny obieg: telefon wrzuca obrazy na Dysk, ocena w osobnym projekcie czatu Claude zapisuje wyniki na Dysk, telefon je odbiera) ZOSTAJE NA DYSKU do końca badania (ok. 02.2027). To wyjątek od W3: dla tego projektu Dysk pozostaje źródłem prawdy i nic w nim nie przenosić ani nie zmieniać. W repo notatek tylko notka-wskaźnik `projekty/<nazwa>/README.md` (bez plików projektu).
+- W8. R2: zmiana skilli na „domyślnie repo” nie może dotknąć projektu czatu używanego do oceny w badaniu (oceniający ma być „ślepy”: bez wiki i innych dokumentów; instrukcja oceny jest wskazana tam po ID pliku na Dysku).
+- W9. Pliki oznaczone na Dysku jako przestarzałe lub do usunięcia (17): nie przenosić.
+- W10. Stary projekt grafu (9 plików; aktualne wersje są w tym repo): nie przenosić.
+- W11. `skille/`: kopie z aktualnie zainstalowanych skilli konta (nowsze niż kopia na Dysku, która nie ma `wiki-brain-git`); kopii skilli z Dysku nie przenosić.
+- W12. Pozostałe drobne pliki: przenieść; Dokumenty Google jako Markdown, Arkusze Google jako CSV, reszta bez zmian.
+- Zakres R3 wynikający z W6-W12: 28 plików (folder A: 4, folder B: 24) + notka-wskaźnik z W7; skille z W11 w R2. Na Dysku nic się nie zmienia (tylko kopiowanie).
