@@ -93,3 +93,8 @@ Liczby (rozmiar = pole fileSize z API; dla Dokumentów i Arkuszy Google wartoś�
 - W11. `skille/`: kopie z aktualnie zainstalowanych skilli konta (nowsze niż kopia na Dysku, która nie ma `wiki-brain-git`); kopii skilli z Dysku nie przenosić.
 - W12. Pozostałe drobne pliki: przenieść; Dokumenty Google jako Markdown, Arkusze Google jako CSV, reszta bez zmian.
 - Zakres R3 wynikający z W6-W12: 28 plików (folder A: 4, folder B: 24) + notka-wskaźnik z W7; skille z W11 w R2. Na Dysku nic się nie zmienia (tylko kopiowanie).
+
+## R1: stan na 23.10.2026 (WSTRZYMANY do 27.10.2026, limit tokenów właściciela; to nie jest sekcja wyników)
+- Zrobione i sprawdzone przez orkiestratora: struktura w repo notatek (merge 14864b6): `README.md`, `.claude/settings.json` (allow dla gita, deny: force-push, usuwanie gałęzi, `git rm`), `zrodla/`, `skille/`; Action grafu nieuruchomiony, graf 69 węzłów. Ochrona GitHuba: W14.
+- Otwarte: R1-2 test w czacie na telefonie, R1-3 test Claude Code na komputerze w klonie repo z pushem (pierwsza próba nieważna: folder bez gita), R1-4 test nowej sesji chmurowej z repo notatek, R1-5 sekcja „R1: WYNIKI”, R1-6 pliki testowe do `archiwum/`.
+- Do wyjaśnienia z właścicielem przed R1-3: gdzie na komputerze Claude Code pracuje z repo (W13: WSL; natywny klon w Windows nie wypakuje `wiki/` z powodu dwukropków).
