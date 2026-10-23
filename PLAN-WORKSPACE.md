@@ -94,7 +94,19 @@ Liczby (rozmiar = pole fileSize z API; dla Dokumentów i Arkuszy Google wartoś�
 - W12. Pozostałe drobne pliki: przenieść; Dokumenty Google jako Markdown, Arkusze Google jako CSV, reszta bez zmian.
 - Zakres R3 wynikający z W6-W12: 28 plików (folder A: 4, folder B: 24) + notka-wskaźnik z W7; skille z W11 w R2. Na Dysku nic się nie zmienia (tylko kopiowanie).
 
-## R1: stan na 23.10.2026 (WSTRZYMANY do 27.10.2026, limit tokenów właściciela; to nie jest sekcja wyników)
-- Zrobione i sprawdzone przez orkiestratora: struktura w repo notatek (merge 14864b6): `README.md`, `.claude/settings.json` (allow dla gita, deny: force-push, usuwanie gałęzi, `git rm`), `zrodla/`, `skille/`; Action grafu nieuruchomiony, graf 69 węzłów. Ochrona GitHuba: W14.
-- Otwarte: R1-2 test w czacie na telefonie, R1-3 test Claude Code na komputerze w klonie repo z pushem (pierwsza próba nieważna: folder bez gita), R1-4 test nowej sesji chmurowej z repo notatek, R1-5 sekcja „R1: WYNIKI”, R1-6 pliki testowe do `archiwum/`.
-- R1-3 (komputer: VS Code i WSL) odłożone przez właściciela 23.10.2026; testy R1-2 i R1-4 mogą iść bez niego. Do wyjaśnienia z właścicielem przed R1-3: gdzie na komputerze Claude Code pracuje z repo (W13: WSL; natywny klon w Windows nie wypakuje `wiki/` z powodu dwukropków).
+## R1: WYNIKI
+
+STATUS: ZAMKNIĘTY Z UWAGAMI (23.10.2026; decyzja właściciela Q10A: tryb komputera wydzielony do R1c, nie blokuje R2 i R3; wyniki zapisał orkiestrator, decyzja Q11A).
+
+Zweryfikowane przez orkiestratora:
+- Struktura na `main` repo notatek (merge 14864b6 z PR #3 tamże): `README.md` z zasadami, `.claude/settings.json` (allow dla gita; deny: force-push, `-f`, `--force-with-lease`, `+ref`, `--delete`, `git rm`), `zrodla/`, `skille/`, `archiwum/` (już istniało).
+- Action grafu nie uruchomił się po 14864b6 (filtr `paths: wiki/**`); graf: 69 węzłów, bez zmian.
+- Tryb (a) Claude Code w chmurze (nowa sesja z aplikacji, tylko repo notatek): zapis i push na `main` (17e0d9b), bez `add_repo`, 0 okienek ze zgodą (liczył właściciel).
+- Tryb (b) zwykły czat na telefonie: `add_repo` (push), zapis i push na `main` (8cef64f), 0 okienek ze zgodą (liczył właściciel).
+- Pliki testowe przeniesione do `archiwum/` (855d1e1).
+- Ochrona GitHuba: W14 (nieegzekwowana, decyzja A); kryterium zastąpione obecnością reguł `deny`; próby force-push nie było.
+
+Uwagi / pozycje otwarte:
+- R1c: tryb (c) komputer (VS Code, WSL czy Windows, W13 do potwierdzenia); właściciel; nie blokuje R2 i R3. Pierwsza próba była nieważna (folder bez gita).
+- W obu testach zgoda była wpisana w poleceniu; liczba pytań przy zwykłym poleceniu bez takiej zgody do sprawdzenia w R2 (skill `write-to-github`).
+- Nie sprawdzono, czy reguły `deny` z `.claude/settings.json` faktycznie blokują polecenia w sesji chmurowej.
