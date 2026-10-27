@@ -110,3 +110,19 @@ Uwagi / pozycje otwarte:
 - R1c: tryb (c) komputer (VS Code, WSL czy Windows, W13 do potwierdzenia); właściciel; nie blokuje R2 i R3. Pierwsza próba była nieważna (folder bez gita).
 - W obu testach zgoda była wpisana w poleceniu; liczba pytań przy zwykłym poleceniu bez takiej zgody do sprawdzenia w R2 (skill `write-to-github`).
 - Nie sprawdzono, czy reguły `deny` z `.claude/settings.json` faktycznie blokują polecenia w sesji chmurowej.
+
+## R3: WYNIKI
+
+STATUS: ZAMKNIĘTY Z UWAGAMI (27.10.2026; wyniki zapisało okno R3; do weryfikacji przez orkiestratora).
+
+Zrobione (tylko liczby; Dysk tylko odczyt, nic na nim nie zmieniono):
+- Przeniesione pliki wg mapowania: 28 = 4 (dokumenty Google -> Markdown, folder A) + 3 (ZIP) + 1 (JSON) + 20 (PDF/EPUB). Plus notka-wskaźnik W7 (1 plik README, bez plików projektu).
+- 20 plików źródłowych: skopiowane rclone przez właściciela na telefonie, `main` repo notatek d0e364e. Suma rozmiarów 20 plików = 82325828 B (równa sumie z R0; 82336883 B z zadania = cały folder B, 24 pliki, w tym 4 małe po 11055 B).
+- `rclone check --one-way` dla `zrodla/`: 0 różnic, 21 zgodnych, 1 hash niesprawdzalny (który plik: nie wiem).
+- ZIP (3) i JSON (1): `rclone check --download`, 0 różnic (3 zgodne ZIP, 1 zgodny JSON), bajt w bajt. 2 ZIP skopiowane rclone na `main` (d0e364e); 1 ZIP, JSON, 4 Markdown i notka są w draft PR #4 w repo notatek (head c37c35d), nie scalone.
+- Action grafu: brak runu po pushu d0e364e (ostatni run z 23.10.2026).
+
+Uwagi / pozycje otwarte:
+- R3-U1: w folderze źródeł na Dysku jest 21 plików, nie 20 (1 plik .docx spoza R0, 8973 B, pojawił się po inwentaryzacji); rclone skopiował go do `zrodla/` (razem 21 plików + .gitkeep). Zostawić czy `git mv` do `archiwum/`: decyduje właściciel z orkiestratorem; nie blokuje.
+- R3-U2: 4 pliki Markdown z dokumentów Google (eksport konektorem, `\-`/`\#` z eksportu zostawione) nie mają porównania z Dyskiem sumą kontrolną; tylko podwójne niezależne przepisanie; nie blokuje.
+- R3-U3: PR #4 w repo notatek (draft) czeka na scalenie przez orkiestratora.
