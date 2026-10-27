@@ -167,8 +167,6 @@ details.bad summary{color:var(--bad)}
 </div>
 
 <script>
-const FOLDER_OUT = "1vyq6DNfJ4it8poszcPXRlkPlSaykyHEI"; // Projekty/Obsidian-graf: tu skrypt wiki_graph.py zapisuje GRAPH-AUTO.json
-const FALLBACK_ID = "1_8l49uTR8LomAfFyDEIjdE6KmneL4NqR";
 const SERVER = "Google Drive";
 const STALE_MIN = 120;
 const $ = id => document.getElementById(id);
@@ -269,12 +267,13 @@ function explain(e){
 const payloadOf = res => { let p = res.payload; if (typeof p === "string"){ try { p = JSON.parse(p); } catch(_){} } return p; };
 
 async function fetchGraph(){
-  let id = FALLBACK_ID;
+  let id = null;
   try {
-    const r = await mcp.callTool(SERVER, "search_files", {query:"parentId = '" + FOLDER_OUT + "' and title = 'GRAPH-AUTO.json'", excludeContentSnippets:true, pageSize:5}, {cache:false});
+    const r = await mcp.callTool(SERVER, "search_files", {query:"title = 'GRAPH-AUTO.json'", excludeContentSnippets:true, pageSize:5}, {cache:false});
     const p = payloadOf(r), list = p && (p.files || p.items || (Array.isArray(p) ? p : []));
     if (list && list.length) id = list[0].id;
   } catch(e){ if (["server_not_connected","consent_required","not_granted","not_in_manifest"].includes(e && e.code)) throw e; }
+  if (!id) throw {code:"not_found", message:"Nie znaleziono pliku GRAPH-AUTO.json na Dysku."};
   const res = await mcp.callTool(SERVER, "download_file_content", {fileId:id}, {cache:false});
   const p = payloadOf(res);
   if (!p || typeof p.content !== "string") throw {code:"bad_shape", message:"Plik GRAPH-AUTO.json ma nieoczekiwany format (brak pola content)."};
