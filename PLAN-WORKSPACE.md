@@ -126,3 +126,12 @@ Uwagi / pozycje otwarte:
 - R3-U1: w folderze źródeł na Dysku jest 21 plików, nie 20 (1 plik .docx spoza R0, 8973 B, pojawił się po inwentaryzacji); rclone skopiował go do `zrodla/` (razem 21 plików + .gitkeep). Zostawić czy `git mv` do `archiwum/`: decyduje właściciel z orkiestratorem; nie blokuje.
 - R3-U2: 4 pliki Markdown z dokumentów Google (eksport konektorem, `\-`/`\#` z eksportu zostawione) nie mają porównania z Dyskiem sumą kontrolną; tylko podwójne niezależne przepisanie; nie blokuje.
 - R3-U3: PR #4 w repo notatek (draft) czeka na scalenie przez orkiestratora.
+
+## R2: zadania (zatwierdzone przez właściciela 27.10.2026, skill to-tickets)
+Każde zadanie = osobne okno; raport w formacie z CLAUDE.md; scala orkiestrator. Kolejność: 1 i 2 równolegle; 3 po 2; 4 i 5 równolegle po 3; 6 po 1, 4, 5.
+1. R2.1 Kopie skilli w repo. Czeka na: nic. Daje: w `skille/<nazwa>/` kopie skilli konta autorstwa właściciela lub przerobionych przez niego (W11); wbudowane skille Anthropic nie są kopiowane, tylko wypisane w raporcie. Zaliczone gdy: liczba kopii = liczba takich skilli; treść bajt w bajt jak w zainstalowanej wersji.
+2. R2.2 Specyfikacja `write-to-github` (`to-spec`). Czeka na: nic. Daje: zatwierdzona przez właściciela specyfikacja: wyzwalacze, dostęp (chmura: repo w sesji; czat: `add_repo`; komputer: później, R1c), zasady zapisu (znajdź przed utworzeniem, Edit dla istniejących, nigdy nie kasuj, jeden commit, `pull --rebase`, sprawdzenie `ls-remote`), duże pliki, wyjątek W8. Ustala też, jakim narzędziem projekt oceny w badaniu zapisuje dziś na Dysk.
+3. R2.3 Skill `write-to-github`: budowa, testy, instalacja. Czeka na: 2. Zaliczone gdy: test na repo syntetycznym i jeden mały prawdziwy zapis; zainstalowany kartą; test w czacie na telefonie bez zgody wpisanej w poleceniu (liczba okienek zapisana) i w sesji w chmurze; sprawdzone, czy reguły `deny` blokują polecenia w chmurze. Bez testów w projekcie oceny (W8).
+4. R2.4 `read-whole` domyślnie na repo. Czeka na: 3. Daje: źródła z `zrodla/`, READING-LOG w repo jako Markdown (przeniesienie obecnego dziennika z Dysku, domyka R3-U1), Dysk tylko na wyraźne polecenie, wyjątek W8.
+5. R2.5 `handoff` i `skill-suggestions` domyślnie na repo. Czeka na: 3. Daje: notatka przekazania w folderze projektu w repo; podpowiedź `write-to-github` zamiast `write-to-gdrive`; wyjątek W8.
+6. R2.6 Domknięcie R2. Czeka na: 1, 4, 5. Daje: odświeżone kopie zmienionych skilli w `skille/`, sekcja „R2: WYNIKI”.
