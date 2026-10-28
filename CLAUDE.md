@@ -1,7 +1,7 @@
 # CLAUDE.md — brain-obsydian
 
 ## START HERE
-The migration (stages 0-5) is FINISHED (2026-10-22). Read `docs/ORCHESTRATOR-HANDOFF.md` first: current setup, secrets, open items, how to work. `PLAN.md` keeps the stage history and evidence. Next project (staged, same working model below): `PLAN-WORKSPACE.md` (shared GitHub workspace for projects, sources and skills in the notes repo).
+The migration (stages 0-5) is FINISHED (2026-10-22). Read `docs/ORCHESTRATOR-HANDOFF.md` first: current setup, secrets, open items, how to work. `PLAN.md` keeps the stage history and evidence. `PLAN-WORKSPACE.md` (shared GitHub workspace for projects, sources and skills in the notes repo) is FINISHED (2026-10-28); its non-blocking open items are listed at the top of that file.
 Read `docs/GITHUB-ACCESS.md` for how repository access works from a Claude session (tools, steps, pitfalls; verified 2026-10-22 from the owner's mobile chat).
 
 ## Working model
@@ -30,6 +30,7 @@ UI strings in the graph page are Polish.
 - Source of truth for notes: the PRIVATE repo `simontg/Brain-Obsydian-NOTES` (`wiki/*.txt`, UTF-8 with BOM, CRLF). Changed only through the account skill `wiki-brain-git` ("wiki save / ask / lint", "zapisz do wiki"); the old Drive skill `wiki-brain` is disabled.
 - Google Drive (folder Wiki) is a read-only backup copy. Do not write notes there and never delete anything there.
 - Graph and index: the Action `generate-graph-index` in the notes repo (template: `tools/notes-repo/generate-graph-index.yml`) runs `tools/wiki_graph.py` and `tools/wiki_index.py` on every push to `wiki/`, commits `graph/GRAPH-AUTO.json` and `graph/INDEX-AUTO.txt` there, and pushes the encrypted `graph/graph.enc.json` to this repo; `pilot-graph.yml` deploys it to GitHub Pages (https://simontg.github.io/brain-obsydian/, password decrypted in the browser). Update time about one minute.
+- The notes repo is the only source of truth also for `projekty/`, `zrodla/` and `skille/` (skills `write-to-github`, `read-whole`, `handoff` write there); Google Drive is a read-only copy (exception: the active study stays on Drive until about 2027-02).
 - The phone cron jobs (Termux: `run_wiki_index.sh` :07, `run_wiki_graph.sh` :12) are disabled since stage 5; the Drive copies of `GRAPH-AUTO.json` and `INDEX-AUTO.txt` are frozen.
 - `graph/graf-wiki.html` serves both the Pages site and the old Claude artifact. The artifact (reads from Drive) is RETIRED: kept, not deleted, but its data no longer updates.
 

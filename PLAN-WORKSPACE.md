@@ -2,6 +2,12 @@
 
 Kontynuacja migracji wiki (PLAN.md, etapy 0-5 zamknięte 22.10.2026). Repo jest PUBLICZNE: w tym pliku tylko liczby i nazwy techniczne, bez nazw projektów, tytułów, treści i identyfikatorów plików z Dysku.
 
+**Projekt ZAKOŃCZONY 28.10.2026** (R0-R4 zamknięte; R4 z uwagami). Pozostałe pozycje, żadna nie blokuje:
+- R3-U2: 4 pliki Markdown z dokumentów Google bez porównania sumą kontrolną z Dyskiem.
+- Wygaszenie Dysku po końcu badania (ok. 02.2027); do tego czasu łącznika Google Drive w ustawieniach Claude NIE odłączać (W15).
+- Niezweryfikowane: mechanizm blokady polecenia z listy deny w sesji chmurowej (reguła z repo czy inny mechanizm).
+- Niezweryfikowane: czy skille konta ładują się w projektach zwykłego czatu.
+
 ## Cel
 Projekty, źródła i materiały, które dziś leżą w folderze roboczym na Dysku Google (folder z projektami i skillami), mają trafić do prywatnego repo `simontg/Brain-Obsydian-NOTES` obok `wiki/`, w jednej strukturze dostępnej dla każdej sesji Claude (czat i Claude Code w chmurze) do odczytu i zapisu. Skille korzystające z Dysku dostają jasną zasadę: domyślnie repo, Dysk tylko na wyraźne polecenie.
 
@@ -93,6 +99,7 @@ Liczby (rozmiar = pole fileSize z API; dla Dokumentów i Arkuszy Google wartoś�
 - W11. `skille/`: kopie z aktualnie zainstalowanych skilli konta (nowsze niż kopia na Dysku, która nie ma `wiki-brain-git`); kopii skilli z Dysku nie przenosić.
 - W12. Pozostałe drobne pliki: przenieść; Dokumenty Google jako Markdown, Arkusze Google jako CSV, reszta bez zmian.
 - Zakres R3 wynikający z W6-W12: 28 plików (folder A: 4, folder B: 24) + notka-wskaźnik z W7; skille z W11 w R2. Na Dysku nic się nie zmienia (tylko kopiowanie).
+- W17 (28.10.2026, R2.4-4). Dzienniki czytania (READING-LOG) leżą w `projekty/<nazwa-projektu>/`.
 
 ## R1: WYNIKI
 
@@ -110,6 +117,13 @@ Uwagi / pozycje otwarte:
 - R1c: tryb (c) komputer (VS Code, WSL czy Windows, W13 do potwierdzenia); właściciel; nie blokuje R2 i R3. Pierwsza próba była nieważna (folder bez gita).
 - W obu testach zgoda była wpisana w poleceniu; liczba pytań przy zwykłym poleceniu bez takiej zgody do sprawdzenia w R2 (skill `write-to-github`).
 - Nie sprawdzono, czy reguły `deny` z `.claude/settings.json` faktycznie blokują polecenia w sesji chmurowej.
+
+### R1c: WYNIKI (28.10.2026; pozycja zamknięta)
+- W13 potwierdzony przez właściciela 28.10.2026 (WSL).
+- Konfiguracja: Claude Code w VS Code na Windowsie; polecenia idą skryptem właściciela do WSL (Debian); klon repo notatek w systemie plików Linuksa. Sesja nie była uruchomiona wewnątrz WSL, tylko wysyłała polecenia do WSL.
+- Skill `write-to-github` dostępny; odczyt i zapis na `main` (a0ade8c, `ls-remote` = HEAD); 0 okienek zgody.
+- Linia o repo jako źródle prawdy dopisana do lokalnego CLAUDE.md w WSL i w Windows.
+- Plik testowy przeniesiony do `archiwum/` (7d68584).
 
 ## R3: WYNIKI
 
@@ -140,3 +154,26 @@ Każde zadanie = osobne okno; raport w formacie z CLAUDE.md; scala orkiestrator.
 - W15 (zmienia W3). Jedno źródło prawdy = repo GitHuba. Także „zapisz na dysk / na G Drive” zapisuje w repo. Dysk jest wygaszany; wyjątek: aktywne badanie (W7, W8) zostaje na Dysku do końca badania (ok. 02.2027). Łącznika Google Drive w ustawieniach Claude NIE odłączać do tego czasu (projekt oceny zapisuje oceny bezpośrednio na Dysk, telefon wrzuca tam obrazy).
 - W16 (zmienia W3). `write-to-gdrive` tylko do odczytu starych plików z Dysku, na wyraźne „odczytaj z Dysku”; nigdy nie zapisuje. Przeróbka w R2.3 razem z `write-to-github`.
 - Pozostałe decyzje D1–D7, D9 (wyzwalacze, push na `main`, zapis bez pytań poza 3 wyjątkami, „usuń” = przeniesienie do `archiwum/`, stan projektu w `postep.md`, załączniki tylko jako prawdziwe pliki): w specyfikacji.
+
+## R2: WYNIKI
+
+STATUS: ZAMKNIĘTY (28.10.2026; fakty sprawdzone przez orkiestratora; repo notatek jest prywatne, to okno go nie czytało).
+
+- R2.1: w `skille/` repo notatek kopie 14 skilli konta.
+- R2.2: specyfikacja `write-to-github`, decyzje W15 i W16 (wyżej).
+- R2.3: `write-to-github` 1.0 i `write-to-gdrive` 2.0 (tylko odczyt) zainstalowane kartą; testy T1-T8; czat na telefonie bez zgody w poleceniu: 0 okienek; zablokowanie polecenia z listy `deny` w sesji chmurowej potwierdzone (czy to reguła z repo, czy inny mechanizm: niezweryfikowane).
+- R2.4: `read-whole` 2.0 zainstalowany; test na telefonie: 0 okienek; repo notatek PR #9 scalony (merge 6b51e05); dziennik czytania przeniesiony z Dysku do repo jako Markdown (dd5718a), stary plik .docx w `archiwum/` (domyka R3-U1). Lokalizacja dzienników: W17.
+- R2.5: `handoff` 3 i `skill-suggestions` zainstalowane kartą (komputer, przeglądarka, 1 potwierdzenie na skill); repo notatek PR #8 scalony (head 05789d0, merge 1022c79); test `handoff` na telefonie bez zgody w poleceniu: 0 okienek, notatka zapisana w `projekty/` (0b20f14), odczytana przez sesję Claude Code w chmurze; plik testowy w `archiwum/` (fe68514).
+- R2.6: kopie w `skille/` na `main` repo notatek = zainstalowane wersje bajt w bajt (sha256) dla `read-whole`, `handoff`, `skill-suggestions`; `write-to-github` i `write-to-gdrive` bajt w bajt od R2.3.
+- Ustalenia: zakładanie repo z sesji Claude niemożliwe (403, „Resource not accessible by integration”); platforma wycina fragmenty w nawiasach ostrych z opisu skilla.
+
+Pozycje otwarte: mechanizm blokady `deny` w chmurze (niezweryfikowane); nie blokuje.
+
+## R4: WYNIKI
+
+STATUS: ZAMKNIĘTY Z UWAGAMI (28.10.2026).
+
+- Przełączenie: `CLAUDE.md` i `docs/ORCHESTRATOR-HANDOFF.md` w tym repo wskazują repo notatek jako źródło prawdy także dla `projekty/`, `zrodla/`, `skille/`; Dysk kopią do odczytu (wyjątek: aktywne badanie do ok. 02.2027). Lokalny CLAUDE.md na komputerze: zrobiony w R1c.
+- Test R4 (decyzja właściciela 28.10.2026): testy z 28.10 zamiast osobnej nowej sesji: czat na telefonie zapisał w `projekty/` przy 0 okienek; sesja w chmurze odczytała i przeniosła plik; komputer jak w R1c.
+- Uwaga: test R4 bez osobnej nowej sesji (decyzja właściciela).
+- Pozycje otwarte (nieblokujące): lista na górze pliku.
