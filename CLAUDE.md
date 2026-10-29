@@ -2,6 +2,7 @@
 
 ## START HERE
 The migration (stages 0-5) is FINISHED (2026-10-22). Read `docs/ORCHESTRATOR-HANDOFF.md` first: current setup, secrets, open items, how to work. `PLAN.md` keeps the stage history and evidence. `PLAN-WORKSPACE.md` (shared GitHub workspace for projects, sources and skills in the notes repo) is FINISHED (2026-10-28); its non-blocking open items are listed at the top of that file.
+Parked ideas for the future VPS: `docs/VPS-IDEAS.md`.
 Read `docs/GITHUB-ACCESS.md` for how repository access works from a Claude session (tools, steps, pitfalls; verified 2026-10-22 from the owner's mobile chat).
 
 ## Working model
