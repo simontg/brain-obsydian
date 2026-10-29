@@ -48,10 +48,19 @@ button{cursor:pointer}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .seg button{border:0;border-radius:0;background:var(--surface);padding:6px 9px;min-height:38px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-family:var(--mono)}
 .seg .sh{display:none}
-@media (max-width:520px){.seg{flex:none}.seg button{padding:6px 5px;font-size:10px;letter-spacing:0}#q{min-width:0}.seg .lg{display:none}.seg .sh{display:inline}}
+@media (max-width:520px){.seg{flex:none}.seg button{padding:6px 5px;font-size:10px;letter-spacing:0}.seg .lg{display:none}.seg .sh{display:inline}}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--core);color:var(--core-fg);font-weight:700}
-.tools input[type=search]{flex:1 1 60px;min-width:0;width:0;min-height:38px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+#sbtn{flex:1 1 60px;min-width:0;text-align:left;color:var(--mut)}#sbtn kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:6px}
+#sd{width:min(560px,calc(100vw - 32px));max-height:80vh;margin:10vh auto auto;padding:12px;border:2px solid var(--core);border-radius:10px;background:var(--surface);color:var(--fg)}
+#sd::backdrop{background:rgba(0,0,0,.55)}
+#sd input{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+#sd .scope{font-family:var(--mono);font-size:12px;color:var(--mut);margin:6px 2px}
+#sd ul{list-style:none;margin:0;padding:0;overflow:auto;max-height:55vh;display:flex;flex-direction:column;gap:4px}
+#sd li{display:flex;gap:6px}
+#sd li a{flex:1;min-width:0;display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;color:inherit;text-decoration:none}
+#sd .t{min-width:0;overflow-wrap:anywhere;flex:1}#sd .m{color:var(--mut);font-family:var(--mono);font-size:12px;flex:none}
+#sd li a:hover,#sd li a:focus-visible{border-color:var(--core)}
 .stat{font-family:var(--mono);font-size:11.5px;color:var(--mut);text-shadow:0 0 6px var(--bg),0 0 6px var(--bg)}
 .over{position:absolute;display:flex;gap:6px;z-index:2}
 .over.tl{left:12px;top:9px;pointer-events:none}.over.tr{right:10px;top:8px}
@@ -132,9 +141,14 @@ details.bad summary{color:var(--bad)}
       <button id="v-time" type="button" aria-pressed="false">Czas</button>
       <button id="v-sphere" type="button" aria-pressed="false">Kula</button>
     </div>
-    <input id="q" type="search" placeholder="Szukaj notatki" aria-label="Szukaj notatki" autocomplete="off">
+    <button class="btn" id="sbtn" type="button">Szukaj notatki<kbd>/</kbd></button>
     <button class="btn" id="ftoggle" type="button" aria-expanded="false" aria-controls="filters">Filtry</button>
   </div>
+  <dialog id="sd" aria-label="Szukaj notatki">
+  <input id="q" type="text" placeholder="Szukaj notatek, projektów, źródeł" aria-label="Szukaj notatki" autocomplete="off">
+  <div class="scope" id="sscope"></div>
+  <ul id="sres"></ul>
+</dialog>
   <div class="areas" id="areachips" role="group" aria-label="Obszary"></div>
   <div class="filters" id="filters" hidden>
     <div class="row"><span class="lbl">Rodzaj</span><span class="row" id="typechips"></span></div>
@@ -848,7 +862,24 @@ d3.select(cv).call(zoom).on("dblclick.zoom", null);
 cv.addEventListener("click", ev => { if (dragMoved){ dragMoved = false; return; } const n = pick(ev); select(n ? n.id : null, !!n && W < 700); });
 cv.addEventListener("mousemove", ev => { const n = pick(ev), id = n ? n.id : null; if (id !== hover){ hover = id; cv.style.cursor = id ? "pointer" : "default"; requestDraw(); } });
 cv.addEventListener("mouseleave", () => { if (hover){ hover = null; requestDraw(); } });
-$("q").addEventListener("input", e => { query = e.target.value.trim(); requestDraw(); });
+/* search dialog: results follow the selected area; a row opens the note file, "na grafie" selects the dot */
+function renderSearch(){
+  const ar = areaSel && areaById.get(areaSel);
+  $("sscope").textContent = ar ? "Szukam tylko w: " + short(ar.name, 40) + " (zdejmij wybór obszaru, by szukać wszędzie)" : "Szukam w całym grafie";
+  const q = norm(query), hits = nodes.filter(n => (!areaSel || n.area === areaSel) && !typeOff.has(n.type) && matches(n))
+    .sort((a, b) => (norm(b.title).startsWith(q) - norm(a.title).startsWith(q)) || a.title.localeCompare(b.title, "pl"));
+  $("sres").replaceChildren(...hits.slice(0, 50).map(n => h("li", {},
+    h("a", {href:docUrl(n.id), target:"_blank", rel:"noopener"}, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), h("span", {class:"m", text:TYPE_LABEL[n.type] || n.type})),
+    h("button", {class:"btn", type:"button", onclick:() => { $("sd").close(); select(n.id, true); }}, "na grafie"))));
+  if (hits.length > 50) $("sres").append(h("li", {class:"mut", text:"Pokazano 50 z " + hits.length + ". Zawęź frazę."}));
+}
+const openSearch = () => { if (!nodes.length || $("sd").open) return; $("sd").showModal(); $("q").select(); renderSearch(); };
+$("sbtn").addEventListener("click", openSearch);
+addEventListener("keydown", e => { if (e.key === "/" && !e.ctrlKey && !e.metaKey && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)){ e.preventDefault(); openSearch(); } });
+$("q").addEventListener("input", e => { query = e.target.value.trim(); renderSearch(); requestDraw(); });
+$("q").addEventListener("keydown", e => { if (e.key === "Enter"){ const a = $("sres").querySelector("a"); if (a) a.click(); } });
+$("sd").addEventListener("click", e => { if (e.target === $("sd")) $("sd").close(); });
+$("sd").addEventListener("close", () => { $("q").value = ""; query = ""; requestDraw(); });
 $("mode").addEventListener("change", () => { requestDraw(); if ($("mode").value === "local" && sel) fit(true); });
 $("depth").addEventListener("change", () => { requestDraw(); if ($("mode").value === "local" && sel) fit(true); });
 $("fit").addEventListener("click", () => fit(true));
