@@ -59,9 +59,9 @@ button{cursor:pointer}
 #sd .scope{font-family:var(--mono);font-size:12px;color:var(--mut);margin:6px 2px}
 #sd ul{list-style:none;margin:0;padding:0;overflow:auto;max-height:55vh;display:flex;flex-direction:column;gap:4px}
 #sd li{display:flex;gap:6px}
-#sd li .main{flex:1;background:none;text-align:left;min-width:0;display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;color:inherit;text-decoration:none}
+#sd li .hit{flex:1;background:none;text-align:left;min-width:0;display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;color:inherit;text-decoration:none}
 #sd .t{min-width:0;overflow-wrap:anywhere;flex:1}#sd .m{color:var(--mut);font-family:var(--mono);font-size:12px;flex:none}
-#sd li .main:hover,#sd li .main:focus-visible{border-color:var(--core)}
+#sd li .hit:hover,#sd li .hit:focus-visible{border-color:var(--core)}
 .stat{font-family:var(--mono);font-size:11.5px;color:var(--mut);text-shadow:0 0 6px var(--bg),0 0 6px var(--bg)}
 .over{position:absolute;display:flex;gap:6px;z-index:2}
 .over.tl{left:12px;top:9px;pointer-events:none}.over.tr{right:10px;top:8px}
@@ -97,6 +97,12 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
 .big{font-size:40px;line-height:1;font-weight:700;font-family:var(--mono);color:var(--core)}
 .big.ok{color:var(--ok)}
 .needs{display:flex;align-items:flex-end;gap:12px}
+.needs.warn{border-left:4px solid var(--warn);padding-left:10px}
+.clock{font-family:var(--mono);font-size:14px;color:var(--mut)}
+#needs.warn{border-color:var(--warn);color:var(--warn);font-weight:700}#needs.ok{color:var(--ok)}
+.today{font-size:14px}
+.year{display:grid;gap:3px;margin-top:6px}.year .q{display:grid;grid-template-columns:20px repeat(13,1fr);gap:3px;align-items:center;font-family:var(--mono);font-size:10px;color:var(--mut)}
+.year i{display:block;height:8px;border:1px solid var(--line);border-radius:2px}.year i.past{background:var(--fg);border-color:var(--fg)}.year i.now{background:var(--core);border-color:var(--core)}
 .needs .cap{color:var(--mut);font-size:13px;padding-bottom:4px}
 .bar3{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line);margin:8px 0 4px}
 .bar3 i{display:block;height:100%}
@@ -134,6 +140,7 @@ details.bad summary{color:var(--bad)}
   <header class="bar">
     <h1><svg class="hex" viewBox="0 0 16 16" aria-hidden="true"><polygon points="8,1 14.5,4.5 14.5,11.5 8,15 1.5,11.5 1.5,4.5" fill="none" stroke="var(--core)" stroke-width="2"/></svg>graf brain-obsydian</h1>
     <div class="fresh off" id="fresh"><span class="led"></span><span id="freshtxt">Wczytywanie danych z Dysku...</span></div>
+    <span class="clock" id="clock"></span><button class="btn" id="needs" type="button" hidden></button>
     <button class="btn primary" id="refresh" type="button">Odśwież</button>
   </header>
   <div class="tools">
@@ -819,6 +826,16 @@ function fillCard(p, n, go, centerLabel, center, back){
     p.append(h("h3", {text:"→ Ta notatka linkuje do (" + out.length + ")"}), out.length ? h("ul", {class:"nl"}, out.map(i => noteBtn(i, null, go, "out"))) : h("p", {class:"mut", text:"Brak."}));
     p.append(h("h3", {text:"← Linkują do tej notatki (" + inn.length + ")"}), inn.length ? h("ul", {class:"nl"}, inn.map(i => noteBtn(i, null, go, "in"))) : h("p", {class:"mut", text:"Brak."}));
 }
+const hotMissing = () => hot ? nodes.filter(n => n.type === "hub" && !(adj.get(hot.id) || new Set()).has(n.id)).map(n => n.title) : [];
+const issueCount = () => { const L = (data && data.lint) || {}; return ["dead_links","orphans","missing_type","ambiguous_titles","empty"].reduce((s, k) => s + (L[k] || []).length, 0) + hotMissing().length; };
+function todayBlock(){
+  const d = new Date(), y = d.getFullYear(), doy = (Date.UTC(y, d.getMonth(), d.getDate()) - Date.UTC(y, 0, 0)) / 864e5, wk = Math.min(52, Math.ceil(doy / 7));
+  const g = h("div", {class:"year", role:"img", "aria-label":"Tydzień " + wk + " z 52"});
+  for (let q = 0; q < 4; q++){ const r = h("div", {class:"q"}, h("span", {text:"Q" + (q + 1)})); for (let i = 1; i <= 13; i++){ const w = q * 13 + i; r.append(h("i", {class: w < wk ? "past" : w === wk ? "now" : ""})); } g.append(r); }
+  return [h("h3", {text:"Dziś"}), h("div", {class:"today", text: d.toLocaleDateString("pl-PL", {weekday:"long", day:"numeric", month:"long", year:"numeric"}) + " · tydzień " + wk + "/52"}), g];
+}
+function renderNeeds(){ const b = $("needs"), n = issueCount(); b.hidden = !data; b.className = "btn " + (n ? "warn" : "ok"); b.textContent = "Do ogarnięcia: " + n; }
+const renderClock = () => { $("clock").textContent = new Date().toLocaleTimeString("pl-PL", {hour:"2-digit", minute:"2-digit"}); };
 function renderPanel(){
   const p = $("panel"); p.replaceChildren();
   if (sel && byId.has(sel)){
@@ -826,15 +843,15 @@ function renderPanel(){
     return;
   }
   const L = (data && data.lint) || {};
-  const hotMiss = hot ? nodes.filter(n => n.type === "hub" && !(adj.get(hot.id) || new Set()).has(n.id)).map(n => n.title) : [];
-  const issues = ["dead_links","orphans","missing_type","ambiguous_titles","empty"].reduce((s, k) => s + (L[k] || []).length, 0) + hotMiss.length;
+  const hotMiss = hotMissing(), issues = issueCount();
   const unv = nodes.filter(n => n.unverified > 0);
   const sv = d3.sum(nodes, n => n.verified || 0), ss = d3.sum(nodes, n => n.stated || 0), su = d3.sum(nodes, n => n.unverified || 0), st = Math.max(1, sv + ss + su);
   p.append(h("h2", {text:"Do ogarnięcia"}));
-  p.append(h("div", {class:"needs"}, h("span", {class:"big" + (issues ? "" : " ok"), text:String(issues)}), h("span", {class:"cap", text: issues ? "problemów ze spójnością wiki" : "problemów ze spójnością. Wiki jest czysta."})));
+  p.append(h("div", {class:"needs" + (issues ? " warn" : "")}, h("span", {class:"big" + (issues ? "" : " ok"), text:String(issues)}), h("span", {class:"cap", text: issues ? "problemów ze spójnością wiki" : "problemów ze spójnością. Wiki jest czysta."})));
   const bar = h("div", {class:"bar3", role:"img", "aria-label":"Twierdzenia: zweryfikowane " + sv + ", od użytkownika " + ss + ", niezweryfikowane " + su});
   for (const [v, col] of [[sv, "var(--ok)"], [ss, "var(--a1)"], [su, "var(--warn)"]]){ const i = h("i"); i.style.width = (100 * v / st) + "%"; i.style.background = col; bar.append(i); }
   p.append(bar, h("div", {class:"legend"}, h("span", {text:"zweryfikowane " + sv}), h("span", {text:"od Ciebie " + ss}), h("span", {text:"niezweryfikowane " + su})));
+  p.append(...todayBlock());
   p.append(h("h3", {text:"Obszary"}), h("ul", {class:"nl"}, areas.map(a => {
     const b = h("button", {type:"button", onclick:() => setArea(a.id)}, h("span", {class:"dot", style:"width:10px;height:10px;border-radius:50%;flex:none;background:" + areaVar(a)}), h("span", {class:"t", text:short(a.name, 40)}), h("span", {class:"m", text:a.count + " · " + fmtDay(a.last)}));
     return h("li", {}, b);
@@ -859,7 +876,7 @@ function renderFresh(){
   $("stat").textContent = nodes.length + " notatek · " + links.length + " powiązań";
 }
 function render(){
-  renderChips(); renderPanel(); renderFresh(); syncViewBtns(); resize();
+  renderChips(); renderPanel(); renderFresh(); renderNeeds(); syncViewBtns(); resize();
   if (!fitted){ fit(false); fitted = true; }
   requestDraw();
 }
@@ -884,7 +901,7 @@ function renderSearch(){
   const q = norm(query), hits = nodes.filter(n => (!areaSel || n.area === areaSel) && !typeOff.has(n.type) && matches(n))
     .sort((a, b) => (norm(b.title).startsWith(q) - norm(a.title).startsWith(q)) || a.title.localeCompare(b.title, "pl"));
   $("sres").replaceChildren(...hits.slice(0, 50).map(n => h("li", {},
-    h("button", {class:"main", type:"button", onclick:() => { $("sd").close(); showNote(n.id); }}, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), h("span", {class:"m", text:TYPE_LABEL[n.type] || n.type})),
+    h("button", {class:"hit", type:"button", onclick:() => { $("sd").close(); showNote(n.id); }}, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), h("span", {class:"m", text:TYPE_LABEL[n.type] || n.type})),
     h("button", {class:"btn", type:"button", onclick:() => { $("sd").close(); select(n.id, true); }}, "na grafie"))));
   if (hits.length > 50) $("sres").append(h("li", {class:"mut", text:"Pokazano 50 z " + hits.length + ". Zawęź frazę."}));
 }
@@ -892,7 +909,7 @@ const openSearch = () => { if (!nodes.length || $("sd").open) return; $("sd").sh
 $("sbtn").addEventListener("click", openSearch);
 addEventListener("keydown", e => { if (e.key === "/" && !e.ctrlKey && !e.metaKey && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)){ e.preventDefault(); openSearch(); } });
 $("q").addEventListener("input", e => { query = e.target.value.trim(); renderSearch(); requestDraw(); });
-$("q").addEventListener("keydown", e => { if (e.key === "Enter"){ const a = $("sres").querySelector(".main"); if (a) a.click(); } });
+$("q").addEventListener("keydown", e => { if (e.key === "Enter"){ const a = $("sres").querySelector(".hit"); if (a) a.click(); } });
 $("sd").addEventListener("click", e => { if (e.target === $("sd")) $("sd").close(); });
 $("sd").addEventListener("close", () => { $("q").value = ""; query = ""; requestDraw(); });
 $("mode").addEventListener("change", () => { requestDraw(); if ($("mode").value === "local" && sel) fit(true); });
@@ -931,6 +948,8 @@ const invalidate = () => { colorCache = null; requestDraw(); };
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", invalidate);
 new MutationObserver(invalidate).observe(document.documentElement, {attributes:true, attributeFilter:["data-theme"]});
 setInterval(renderFresh, 60000);
+setInterval(renderClock, 20000); renderClock();
+$("needs").addEventListener("click", () => { select(null); $("panel").scrollTop = 0; });
 renderPanel();
 load();
 </script>
