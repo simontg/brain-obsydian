@@ -110,6 +110,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
 .nl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .nl button{width:100%;text-align:left;background:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;display:flex;gap:8px;align-items:center}
 .nl button svg{flex:none}
+.nl button span.ar{flex:none;font-weight:700;font-family:var(--mono)}.ar.out{color:var(--a1)}.ar.in{color:var(--ok)}
 .nl button span.t{min-width:0;overflow-wrap:anywhere;flex:1}
 .nl button span.m{color:var(--mut);font-family:var(--mono);font-size:12px;flex:none}
 .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -754,9 +755,9 @@ function setArea(id){
 }
 
 /* ---------- panel i filtry ---------- */
-function noteBtn(id, meta, go = i => select(i, true)){
+function noteBtn(id, meta, go = i => select(i, true), dir){
   const n = byId.get(id);
-  return h("li", {}, h("button", {type:"button", onclick:() => go(id)}, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), meta ? h("span", {class:"m", text:meta}) : null));
+  return h("li", {}, h("button", {type:"button", onclick:() => go(id)}, dir ? h("span", {class:"ar " + dir, text: dir === "out" ? "→" : "←", title: dir === "out" ? "ta notatka linkuje do niej" : "ona linkuje do tej notatki"}) : null, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), meta ? h("span", {class:"m", text:meta}) : null));
 }
 function renderAreaChips(){
   const box = $("areachips"); box.replaceChildren();
@@ -815,8 +816,8 @@ function fillCard(p, n, go, centerLabel, center, back){
     cp.addEventListener("click", () => copyText("[[" + n.title + "]]", cp));
     p.append(h("div", {class:"acts"}, h("a", {class:"open", href:docUrl(n.id), target:"_blank", rel:"noopener"}, window.claude ? "Otwórz w Dokumentach" : "Otwórz na GitHubie"), cp,
       h("button", {class:"btn", type:"button", onclick:center}, centerLabel)));
-    p.append(h("h3", {text:"Prowadzi do (" + out.length + ")"}), out.length ? h("ul", {class:"nl"}, out.map(i => noteBtn(i, null, go))) : h("p", {class:"mut", text:"Brak."}));
-    p.append(h("h3", {text:"Prowadzą do niej (" + inn.length + ")"}), inn.length ? h("ul", {class:"nl"}, inn.map(i => noteBtn(i, null, go))) : h("p", {class:"mut", text:"Brak."}));
+    p.append(h("h3", {text:"→ Ta notatka linkuje do (" + out.length + ")"}), out.length ? h("ul", {class:"nl"}, out.map(i => noteBtn(i, null, go, "out"))) : h("p", {class:"mut", text:"Brak."}));
+    p.append(h("h3", {text:"← Linkują do tej notatki (" + inn.length + ")"}), inn.length ? h("ul", {class:"nl"}, inn.map(i => noteBtn(i, null, go, "in"))) : h("p", {class:"mut", text:"Brak."}));
 }
 function renderPanel(){
   const p = $("panel"); p.replaceChildren();
