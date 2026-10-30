@@ -12,6 +12,15 @@ Source: transcript and screenshots of a YouTube video about a personal "agentic 
 - **Private access**: a private network (Tailscale in the video) instead of a public address; then the page would not need the password and encryption used now.
 - **Restricted agent on the server**: one settings file that blocks tools that send, share or delete (drafts only).
 
+## Parked on 2026-10-30 (owner: later, not now)
+What the panels in the video are (transcript and screenshot; reading of the screenshot is mine, unverified):
+- **Today / next 14 days**: a list of tasks written by a routine from the author's own tracker, plus a line "calendar · …" with the day's calls. Not a copy of a calendar app.
+- **Needs <owner>**: the only list that waits for the human. The assistant never marks an item done, only the owner does. Our nearest existing piece: "Do ogarnięcia" and "Z niezweryfikowanymi twierdzeniami".
+- **Skills deck**: the owner's Claude Code skills as buttons ("tap to run"); the button makes the right machine run the skill, the browser does not run it. How the button reaches the machine is not stated in the transcript.
+- Idea for our setup: tasks and calendar as an encrypted JSON written by a routine (public repo, so never plain), read by the page. A Calendar/Gmail connector is visible in the session tools, but was not called or checked.
+
+Done meanwhile on the page: clock, week progress grid (4 x 13 weeks) and a visible "Do ogarnięcia" counter.
+
 ## Page ideas (no VPS needed once data exists)
 - Status strip: last data build, last sync, runner state.
 - "Today / next 14 days" panels read from files written by routines.
