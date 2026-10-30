@@ -53,14 +53,15 @@ button{cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--core);color:var(--core-fg);font-weight:700}
 #sbtn{flex:1 1 60px;min-width:0;text-align:left;color:var(--mut)}#sbtn kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:6px}
 #sd{width:min(560px,calc(100vw - 32px));max-height:80vh;margin:10vh auto auto;padding:12px;border:2px solid var(--core);border-radius:10px;background:var(--surface);color:var(--fg)}
-#sd::backdrop{background:rgba(0,0,0,.55)}
+#nd{width:min(560px,calc(100vw - 32px));max-height:85vh;margin:6vh auto auto;padding:14px;border:2px solid var(--core);border-radius:10px;background:var(--surface);color:var(--fg)}
+#sd::backdrop,#nd::backdrop{background:rgba(0,0,0,.55)}
 #sd input{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
 #sd .scope{font-family:var(--mono);font-size:12px;color:var(--mut);margin:6px 2px}
 #sd ul{list-style:none;margin:0;padding:0;overflow:auto;max-height:55vh;display:flex;flex-direction:column;gap:4px}
 #sd li{display:flex;gap:6px}
-#sd li a{flex:1;min-width:0;display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;color:inherit;text-decoration:none}
+#sd li .main{flex:1;background:none;text-align:left;min-width:0;display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:38px;color:inherit;text-decoration:none}
 #sd .t{min-width:0;overflow-wrap:anywhere;flex:1}#sd .m{color:var(--mut);font-family:var(--mono);font-size:12px;flex:none}
-#sd li a:hover,#sd li a:focus-visible{border-color:var(--core)}
+#sd li .main:hover,#sd li .main:focus-visible{border-color:var(--core)}
 .stat{font-family:var(--mono);font-size:11.5px;color:var(--mut);text-shadow:0 0 6px var(--bg),0 0 6px var(--bg)}
 .over{position:absolute;display:flex;gap:6px;z-index:2}
 .over.tl{left:12px;top:9px;pointer-events:none}.over.tr{right:10px;top:8px}
@@ -90,9 +91,9 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
 .msg p{margin:0;color:var(--mut)}
 .msg h2{margin:0;font-size:17px}
 .panel{flex:none;max-height:38%;overflow:auto;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px 16px;min-width:0}
-.panel h2{margin:0 0 6px;font-size:17px;overflow-wrap:anywhere;text-wrap:balance}
-.panel h3{margin:16px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700;font-family:var(--mono);display:flex;justify-content:space-between;gap:8px}
-.panel p{margin:4px 0}
+.panel h2,#nd h2{margin:0 0 6px;font-size:17px;overflow-wrap:anywhere;text-wrap:balance}
+.panel h3,#nd h3{margin:16px 0 6px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:700;font-family:var(--mono);display:flex;justify-content:space-between;gap:8px}
+.panel p,#nd p{margin:4px 0}
 .big{font-size:40px;line-height:1;font-weight:700;font-family:var(--mono);color:var(--core)}
 .big.ok{color:var(--ok)}
 .needs{display:flex;align-items:flex-end;gap:12px}
@@ -149,6 +150,7 @@ details.bad summary{color:var(--bad)}
   <div class="scope" id="sscope"></div>
   <ul id="sres"></ul>
 </dialog>
+  <dialog id="nd" aria-label="Notatka"><div id="nbody"></div><div class="acts"><button class="btn" id="nclose" type="button">Zamknij</button></div></dialog>
   <div class="areas" id="areachips" role="group" aria-label="Obszary"></div>
   <div class="filters" id="filters" hidden>
     <div class="row"><span class="lbl">Rodzaj</span><span class="row" id="typechips"></span></div>
@@ -752,9 +754,9 @@ function setArea(id){
 }
 
 /* ---------- panel i filtry ---------- */
-function noteBtn(id, meta){
+function noteBtn(id, meta, go = i => select(i, true)){
   const n = byId.get(id);
-  return h("li", {}, h("button", {type:"button", onclick:() => select(id, true)}, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), meta ? h("span", {class:"m", text:meta}) : null));
+  return h("li", {}, h("button", {type:"button", onclick:() => go(id)}, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), meta ? h("span", {class:"m", text:meta}) : null));
 }
 function renderAreaChips(){
   const box = $("areachips"); box.replaceChildren();
@@ -796,14 +798,14 @@ async function copyText(t, btn){
     catch(e){ flash(btn, "Nie udało się"); }
   }
 }
-function renderPanel(){
-  const p = $("panel"); p.replaceChildren();
-  if (sel && byId.has(sel)){
-    const n = byId.get(sel), ar = areaById.get(n.area);
-    const out = links.filter(l => l.source.id === sel).map(l => l.target.id), inn = links.filter(l => l.target.id === sel).map(l => l.source.id);
+/* note card: used by the side panel and by the search dialog */
+function fillCard(p, n, go, centerLabel, center, back){
+    const ar = areaById.get(n.area);
+    const out = links.filter(l => l.source.id === n.id).map(l => l.target.id), inn = links.filter(l => l.target.id === n.id).map(l => l.source.id);
     const typeB = h("span", {class:"badge"}, glyph(n.type, areaColor(n), 14), TYPE_LABEL[n.type] || n.type);
     const areaB = ar && n.area !== "_meta" ? h("button", {class:"badge", type:"button", title:"Pokaż tylko ten obszar", onclick:() => { if (areaSel !== n.area) setArea(n.area); }}, h("span", {class:"dot", style:"width:9px;height:9px;border-radius:50%;background:" + areaVar(ar)}), short(ar.name, 30)) : null;
-    p.append(h("button", {class:"btn", type:"button", onclick:() => select(null)}, "← Przegląd"), h("h2", {text:n.title}), h("div", {class:"badges"}, typeB, areaB,
+    if (back) p.append(back);
+    p.append(h("h2", {text:n.title}), h("div", {class:"badges"}, typeB, areaB,
       n.unverified > 0 ? h("span", {class:"badge warn", text:"niezweryfikowane: " + n.unverified}) : null,
       h("span", {class:"badge", text:"zweryfikowane: " + (n.verified||0)}), h("span", {class:"badge", text:"od użytkownika: " + (n.stated||0)})));
     if (n.summary) p.append(h("p", {text:n.summary}));
@@ -812,9 +814,14 @@ function renderPanel(){
     const cp = h("button", {class:"btn", type:"button"}, "Kopiuj [[tytuł]]");
     cp.addEventListener("click", () => copyText("[[" + n.title + "]]", cp));
     p.append(h("div", {class:"acts"}, h("a", {class:"open", href:docUrl(n.id), target:"_blank", rel:"noopener"}, window.claude ? "Otwórz w Dokumentach" : "Otwórz na GitHubie"), cp,
-      h("button", {class:"btn", type:"button", onclick:() => select(n.id, true)}, "Wyśrodkuj")));
-    p.append(h("h3", {text:"Prowadzi do (" + out.length + ")"}), out.length ? h("ul", {class:"nl"}, out.map(i => noteBtn(i))) : h("p", {class:"mut", text:"Brak."}));
-    p.append(h("h3", {text:"Prowadzą do niej (" + inn.length + ")"}), inn.length ? h("ul", {class:"nl"}, inn.map(i => noteBtn(i))) : h("p", {class:"mut", text:"Brak."}));
+      h("button", {class:"btn", type:"button", onclick:center}, centerLabel)));
+    p.append(h("h3", {text:"Prowadzi do (" + out.length + ")"}), out.length ? h("ul", {class:"nl"}, out.map(i => noteBtn(i, null, go))) : h("p", {class:"mut", text:"Brak."}));
+    p.append(h("h3", {text:"Prowadzą do niej (" + inn.length + ")"}), inn.length ? h("ul", {class:"nl"}, inn.map(i => noteBtn(i, null, go))) : h("p", {class:"mut", text:"Brak."}));
+}
+function renderPanel(){
+  const p = $("panel"); p.replaceChildren();
+  if (sel && byId.has(sel)){
+    fillCard(p, byId.get(sel), id => select(id, true), "Wyśrodkuj", () => select(sel, true), h("button", {class:"btn", type:"button", onclick:() => select(null)}, "← Przegląd"));
     return;
   }
   const L = (data && data.lint) || {};
@@ -862,14 +869,21 @@ d3.select(cv).call(zoom).on("dblclick.zoom", null);
 cv.addEventListener("click", ev => { if (dragMoved){ dragMoved = false; return; } const n = pick(ev); select(n ? n.id : null, !!n && W < 700); });
 cv.addEventListener("mousemove", ev => { const n = pick(ev), id = n ? n.id : null; if (id !== hover){ hover = id; cv.style.cursor = id ? "pointer" : "default"; requestDraw(); } });
 cv.addEventListener("mouseleave", () => { if (hover){ hover = null; requestDraw(); } });
-/* search dialog: results follow the selected area; a row opens the note file, "na grafie" selects the dot */
+function showNote(id){
+  const n = byId.get(id), b = $("nbody"); b.replaceChildren();
+  fillCard(b, n, showNote, "Na grafie", () => { $("nd").close(); select(id, true); });
+  if (!$("nd").open) $("nd").showModal();
+}
+$("nclose").addEventListener("click", () => $("nd").close());
+$("nd").addEventListener("click", e => { if (e.target === $("nd")) $("nd").close(); });
+/* search dialog: results follow the selected area; a row opens the note card in a dialog, "na grafie" selects the dot */
 function renderSearch(){
   const ar = areaSel && areaById.get(areaSel);
   $("sscope").textContent = ar ? "Szukam tylko w: " + short(ar.name, 40) + " (zdejmij wybór obszaru, by szukać wszędzie)" : "Szukam w całym grafie";
   const q = norm(query), hits = nodes.filter(n => (!areaSel || n.area === areaSel) && !typeOff.has(n.type) && matches(n))
     .sort((a, b) => (norm(b.title).startsWith(q) - norm(a.title).startsWith(q)) || a.title.localeCompare(b.title, "pl"));
   $("sres").replaceChildren(...hits.slice(0, 50).map(n => h("li", {},
-    h("a", {href:docUrl(n.id), target:"_blank", rel:"noopener"}, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), h("span", {class:"m", text:TYPE_LABEL[n.type] || n.type})),
+    h("button", {class:"main", type:"button", onclick:() => { $("sd").close(); showNote(n.id); }}, glyph(n.type, areaColor(n), 14), h("span", {class:"t", text:n.title.replace(/^Hub:\s*/i, "")}), h("span", {class:"m", text:TYPE_LABEL[n.type] || n.type})),
     h("button", {class:"btn", type:"button", onclick:() => { $("sd").close(); select(n.id, true); }}, "na grafie"))));
   if (hits.length > 50) $("sres").append(h("li", {class:"mut", text:"Pokazano 50 z " + hits.length + ". Zawęź frazę."}));
 }
@@ -877,7 +891,7 @@ const openSearch = () => { if (!nodes.length || $("sd").open) return; $("sd").sh
 $("sbtn").addEventListener("click", openSearch);
 addEventListener("keydown", e => { if (e.key === "/" && !e.ctrlKey && !e.metaKey && !/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)){ e.preventDefault(); openSearch(); } });
 $("q").addEventListener("input", e => { query = e.target.value.trim(); renderSearch(); requestDraw(); });
-$("q").addEventListener("keydown", e => { if (e.key === "Enter"){ const a = $("sres").querySelector("a"); if (a) a.click(); } });
+$("q").addEventListener("keydown", e => { if (e.key === "Enter"){ const a = $("sres").querySelector(".main"); if (a) a.click(); } });
 $("sd").addEventListener("click", e => { if (e.target === $("sd")) $("sd").close(); });
 $("sd").addEventListener("close", () => { $("q").value = ""; query = ""; requestDraw(); });
 $("mode").addEventListener("change", () => { requestDraw(); if ($("mode").value === "local" && sel) fit(true); });
